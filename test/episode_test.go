@@ -23,12 +23,9 @@ func init() {
 }
 
 func TestCreate(t *testing.T) {
-	// TODO: migrate
-	if err := db.Get().DropTables(); err != nil {
-		t.Fatal(err)
-	}
-	if err := db.Get().CreateTables(); err != nil {
-		t.Fatal(err)
+	_, err := db.Get().Exec("TRUNCATE TABLE episodes")
+	if err != nil {
+		panic(err)
 	}
 
 	router := route.New()

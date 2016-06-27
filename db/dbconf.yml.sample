@@ -1,0 +1,11 @@
+development:
+    driver: mymysql
+    open: dbname/user/pass
+test:
+    driver: mymysql
+    open: dbname/user/pass
+production:
+    driver: mymysql
+    open: dbname/user/pass
+
+

@@ -5,10 +5,10 @@ import (
 )
 
 type Episode struct {
-	Id        int       `json:"id"`
-	Title     string    `json:"title"`
-	Status    uint      `json:"status"`
-	CreatedAt time.Time `json:"created_at"`
+	Id        int       `db:"id"`
+	Title     string    `db:"title"`
+	Status    uint      `db:"status"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 func GetEpisodes() (*[]Episode, error) {
