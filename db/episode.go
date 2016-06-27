@@ -28,9 +28,23 @@ func CreateEpisode(id int, title string, status uint) (*Episode, error) {
 		CreatedAt: time.Now(),
 	}
 
+	if _, err := episode.validate(); err != nil {
+		return nil, err
+	}
+
 	if err := dbMap.Insert(&episode); err != nil {
 		return nil, err
 	}
 
 	return &episode, nil
+}
+
+// unique check
+func (e *Episode) validate() (bool, error) {
+	count, _ := dbMap.SelectInt("SELECT count(*) FROM episodes WHERE id=?", e.Id)
+	if count > 0 {
+		return false, newValidateError("Duplicate record in episodes")
+	}
+
+	return true, nil
 }

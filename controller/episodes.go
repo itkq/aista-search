@@ -33,5 +33,5 @@ func EpisodePOST(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"status": "ok", "episode": ep})
+	c.JSON(200, gin.H{"status": "ok", "id": ep.Id})
 }

@@ -9,6 +9,10 @@ import (
 
 var dbMap *gorp.DbMap
 
+func Get() *gorp.DbMap {
+	return dbMap
+}
+
 func Connect() {
 	driver := config.GetEnv("DB_DRIVER", "mysql")
 	url := config.GetEnv("DB_URL", "")
