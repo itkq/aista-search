@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"aista-search/view"
 	"github.com/gin-gonic/gin"
 )
 
 func IndexGET(c *gin.Context) {
-	c.String(200, "Hello, World!")
+	v := view.New(c)
+	v.Name = "index/index"
+	v.Render()
 }
