@@ -10,5 +10,8 @@ func New() *gin.Engine {
 
 	router.GET("/", controller.IndexGET)
 
+	router.GET("/episodes", controller.EpisodesGET)
+	router.POST("/episodes", controller.EpisodePOST)
+
 	return router
 }
