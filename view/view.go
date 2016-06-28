@@ -5,7 +5,6 @@ import (
 	"aista-search/session"
 	"encoding/gob"
 	"github.com/gin-gonic/gin"
-	"github.com/k0kubun/pp"
 	"html/template"
 	"net/http"
 	"os"
@@ -17,6 +16,8 @@ var (
 	childTemplates     []string
 	rootTemplate       string
 	templateCollection = make(map[string]*template.Template)
+	pluginCollection   = make(template.FuncMap)
+	mutexPlugins       sync.RWMutex
 	mutex              sync.RWMutex
 	sessionName        string
 	viewInfo           View
@@ -65,6 +66,27 @@ func LoadTemplates(rootTemp string, childTemps []string) {
 	childTemplates = childTemps
 }
 
+// LoadPlugins will combine all template.FuncMaps into one map and then set the
+// plugins for the templates
+// If a func already exists, it is rewritten, there is no error
+func LoadPlugins(fms ...template.FuncMap) {
+	// Final FuncMap
+	fm := make(template.FuncMap)
+
+	// Loop through the maps
+	for _, m := range fms {
+		// Loop through each key and value
+		for k, v := range m {
+			fm[k] = v
+		}
+	}
+
+	// Load the plugins
+	mutexPlugins.Lock()
+	pluginCollection = fm
+	mutexPlugins.Unlock()
+}
+
 func New(c *gin.Context) *View {
 	v := &View{}
 	v.Vars = make(map[string]interface{})
@@ -83,6 +105,11 @@ func (v *View) Render() {
 	tc, ok := templateCollection[v.Name]
 	mutex.RUnlock()
 
+	// Get the plugin collection
+	mutexPlugins.RLock()
+	pc := pluginCollection
+	mutexPlugins.RUnlock()
+
 	// If the template collection is not cached or caching is disabled
 	if !ok || !viewInfo.Caching {
 
@@ -91,7 +118,6 @@ func (v *View) Render() {
 		templateList = append(templateList, rootTemplate)
 		templateList = append(templateList, v.Name)
 		templateList = append(templateList, childTemplates...)
-		pp.Println(templateList)
 
 		// Loop through each template and test the full path
 		for i, name := range templateList {
@@ -105,7 +131,7 @@ func (v *View) Render() {
 		}
 
 		// Determine if there is an error in the template syntax
-		templates, err := template.New(v.Name).ParseFiles(templateList...)
+		templates, err := template.New(v.Name).Funcs(pc).ParseFiles(templateList...)
 
 		if err != nil {
 			http.Error(c.Writer, "Template Parse Error: "+err.Error(), http.StatusInternalServerError)

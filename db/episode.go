@@ -11,6 +11,32 @@ type Episode struct {
 	CreatedAt time.Time `db:"created_at"`
 }
 
+const (
+	Created = iota
+	Collected
+	Crassified
+	Extracted
+	Registered
+)
+
+func (e *Episode) GetStatus() string {
+	switch e.Status {
+	case Created:
+		return "作成済み"
+	case Collected:
+		return "画像収集済み"
+	case Crassified:
+		return "振り分け済み"
+	case Extracted:
+		return "文字抽出済み"
+	case Registered:
+		return "登録済み"
+	default:
+		return "未分類"
+	}
+
+}
+
 func GetEpisodes() (*[]Episode, error) {
 	var episodes []Episode
 	if _, err := dbMap.Select(&episodes, "SELECT * FROM episodes"); err != nil {

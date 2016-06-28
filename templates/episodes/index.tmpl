@@ -1,0 +1,23 @@
+{{ define "title"}} - エピソード一覧{{ end }}
+{{ define "head" }}{{ end }}
+{{ define "content" }}
+<h2>エピソード一覧</h2>
+<table>
+	<tr>
+		<th align="left">話</th>
+		<th align="left">タイトル</th>
+		<th align="left">ステータス</th>
+		<th align="left">作成日</th>
+	</tr>
+
+	{{ range .episodes }}
+		<tr>
+			<td align="left">{{ .Id }}</td>
+			<td align="left">{{ .Title }}</td>
+			<td align="left">{{ .Status | EpisodeStatus }}</td>
+			<td align="left">{{ .CreatedAt | FormatTime }}</td>
+		</tr>
+	{{ end }}
+</table>
+{{ end }}
+{{ define "foot" }}{{ end }}

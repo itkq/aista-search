@@ -2,19 +2,18 @@ package controller
 
 import (
 	"aista-search/db"
+	"aista-search/view"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
 func EpisodesGET(c *gin.Context) {
-	episodes, err := db.GetEpisodes()
+	episodes, _ := db.GetEpisodes()
 
-	if err != nil {
-		c.JSON(400, nil)
-		return
-	}
-
-	c.JSON(200, episodes)
+	v := view.New(c)
+	v.Name = "episodes/index"
+	v.Vars["episodes"] = episodes
+	v.Render()
 }
 
 func EpisodePOST(c *gin.Context) {
