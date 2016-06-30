@@ -7,13 +7,9 @@ import (
 	"testing"
 )
 
-type Response struct {
-	Status string `json:"status"`
-	Id     int    `json:"id"`
-}
-
-type Response2 struct {
+type EpisodeResponse struct {
 	Status  string     `json:"status"`
+	Id      int        `json:"id"`
 	Episode db.Episode `json:"episode"`
 }
 
@@ -24,7 +20,7 @@ func initEpisodes() {
 	}
 }
 
-func TestCreate(t *testing.T) {
+func TestCreateEpisode(t *testing.T) {
 	initEpisodes()
 
 	// Create episode
@@ -34,9 +30,9 @@ func TestCreate(t *testing.T) {
 		map[string]string{"id": "1", "title": "hoge"},
 	)
 
-	var actual Response
+	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	expected := Response{Status: "ok", Id: 1}
+	expected := EpisodeResponse{Status: "ok", Id: 1}
 
 	if actual != expected {
 		pp.Println(actual)
@@ -50,9 +46,9 @@ func TestCreate(t *testing.T) {
 		map[string]string{"id": "1", "title": "fuga"},
 	)
 
-	var actual2 Response
+	var actual2 EpisodeResponse
 	json.Unmarshal(body, &actual2)
-	expected = Response{Status: "bad", Id: 0}
+	expected = EpisodeResponse{Status: "bad", Id: 0}
 
 	if actual2 != expected {
 		pp.Println(actual2)
@@ -60,7 +56,7 @@ func TestCreate(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func TestGetEpisode(t *testing.T) {
 	initEpisodes()
 
 	// Get no episode
@@ -69,9 +65,10 @@ func TestGet(t *testing.T) {
 		map[string]string{},
 	)
 
-	var actual Response2
+	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	if actual.Status != "bad" {
+	expected := EpisodeResponse{Status: "bad"}
+	if actual != expected {
 		pp.Println(actual)
 		t.Error("response error")
 	}
@@ -94,10 +91,10 @@ func TestGet(t *testing.T) {
 		map[string]string{},
 	)
 
-	var actual2 Response2
+	var actual2 EpisodeResponse
 	json.Unmarshal(body, &actual2)
-	ep := actual2.Episode
 
+	ep := actual2.Episode
 	if ep.Id != 2 || ep.Title != "fuga" || ep.Status != 0 {
 		pp.Println(actual)
 		t.Error("response error")
@@ -119,7 +116,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdateEpisode(t *testing.T) {
 	initEpisodes()
 
 	// Create episode
@@ -129,9 +126,9 @@ func TestUpdate(t *testing.T) {
 		map[string]string{"id": "1", "title": "hoge"},
 	)
 
-	var actual Response
+	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	expected := Response{Status: "ok", Id: 1}
+	expected := EpisodeResponse{Status: "ok", Id: 1}
 
 	if actual != expected {
 		pp.Println(actual)
@@ -150,7 +147,7 @@ func TestUpdate(t *testing.T) {
 		map[string]string{},
 	)
 
-	var actual2 Response2
+	var actual2 EpisodeResponse
 	json.Unmarshal(body, &actual2)
 	ep := actual2.Episode
 
