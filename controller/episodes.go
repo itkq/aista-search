@@ -61,5 +61,9 @@ func LatestEpisodeGET(c *gin.Context) {
 		return
 	}
 
+	if ep.Id == 0 {
+		c.JSON(400, gin.H{"status": "bad", "msg": "no episode"})
+	}
+
 	c.JSON(200, gin.H{"status": "ok", "episode": ep})
 }
