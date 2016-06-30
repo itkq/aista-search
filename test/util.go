@@ -1,11 +1,27 @@
 package test
 
 import (
+	"aista-search/config"
+	"aista-search/db"
+	"aista-search/route"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 )
+
+var ts *httptest.Server
+
+func init() {
+	os.Setenv("GO_ENV", "test")
+	config.LoadEnv()
+	db.Connect()
+
+	router := route.New()
+	ts = httptest.NewServer(router)
+}
 
 func httpGet(endpoint string, header map[string]string) []byte {
 	req, _ := http.NewRequest("GET", endpoint, nil)
