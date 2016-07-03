@@ -26,3 +26,4 @@ _testmain.go
 gin-bin
 .env*
 dbconf.yml
+_vendor
