@@ -1,18 +1,18 @@
 package db
 
 import (
-	"database/sql"
+	"gopkg.in/guregu/null.v3"
 	"time"
 )
 
 type Image struct {
-	ID        int            `db:"id" json:"id"`
-	EpisodeID int            `db:"episode_id" json:"episode_id"`
-	Path      string         `db:"path" json:"path"`
-	URL       sql.NullString `db:"url" json:"url"`
-	Sentence  sql.NullString `db:"sentence" json:"sentence"`
-	CreatedAt time.Time      `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time      `db:"updated_at" json:"updated_at"`
+	ID        int         `db:"id" json:"id"`
+	EpisodeID int         `db:"episode_id" json:"episode_id"`
+	Path      string      `db:"path" json:"path"`
+	URL       null.String `db:"url" json:"url"`
+	Sentence  null.String `db:"sentence" json:"sentence"`
+	CreatedAt time.Time   `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time   `db:"updated_at" json:"updated_at"`
 }
 
 func CreateImages(images []Image) error {

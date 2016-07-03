@@ -2,9 +2,9 @@ package test
 
 import (
 	"aista-search/db"
-	"database/sql"
 	"encoding/json"
 	"github.com/k0kubun/pp"
+	"gopkg.in/guregu/null.v3"
 	"strconv"
 	"testing"
 )
@@ -148,26 +148,14 @@ func TestUpdateImages(t *testing.T) {
 
 	var request2 []db.Image
 	request2 = append(request2, db.Image{
-		Path: path1,
-		URL: sql.NullString{
-			Valid:  true,
-			String: urls[path1],
-		},
-		Sentence: sql.NullString{
-			Valid:  true,
-			String: sentences[path1],
-		},
+		Path:     path1,
+		URL:      null.StringFrom(urls[path1]),
+		Sentence: null.StringFrom(sentences[path1]),
 	})
 	request2 = append(request2, db.Image{
-		Path: path2,
-		URL: sql.NullString{
-			Valid:  true,
-			String: urls[path2],
-		},
-		Sentence: sql.NullString{
-			Valid:  true,
-			String: sentences[path2],
-		},
+		Path:     path2,
+		URL:      null.StringFrom(urls[path2]),
+		Sentence: null.StringFrom(sentences[path2]),
 	})
 
 	jsonBytes, _ = json.Marshal(request2)
