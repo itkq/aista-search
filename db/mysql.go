@@ -27,7 +27,7 @@ func Connect() {
 func initDb(db *sql.DB) *gorp.DbMap {
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 	dbmap.AddTableWithName(Episode{}, "episodes")
-	dbmap.AddTableWithName(Image{}, "images")
+	dbmap.AddTableWithName(Image{}, "images").SetKeys(true, "Id")
 	dbmap.CreateTablesIfNotExists()
 
 	return dbmap

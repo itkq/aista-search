@@ -15,7 +15,9 @@ func New() *gin.Engine {
 	router.POST("/api/episode/update", controller.EpisodeUpdate)
 	router.GET("/api/episode/latest", controller.LatestEpisodeGET)
 
+	router.GET("/api/images", controller.ImagesGET)
 	router.POST("/api/image/create", controller.ImagesPOST)
+	router.POST("/api/image/update", controller.ImagesUpdate)
 
 	return router
 }
