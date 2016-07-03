@@ -12,12 +12,12 @@ func New() *gin.Engine {
 
 	router.GET("/episodes", controller.EpisodesGET)
 	router.POST("/api/episode/create", controller.EpisodePOST)
-	router.POST("/api/episode/update", controller.EpisodeUpdate)
+	router.POST("/api/episode/update", controller.EpisodeUpdatePOST)
 	router.GET("/api/episode/latest", controller.LatestEpisodeGET)
 
 	router.GET("/api/images", controller.ImagesGET)
 	router.POST("/api/image/create", controller.ImagesPOST)
-	router.POST("/api/image/update", controller.ImagesUpdate)
+	router.POST("/api/image/update", controller.ImagesUpdatePOST)
 
 	return router
 }

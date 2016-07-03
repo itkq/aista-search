@@ -22,7 +22,7 @@ func ImagesPOST(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "ok", "count": len(images)})
 }
 
-func ImagesUpdate(c *gin.Context) {
+func ImagesUpdatePOST(c *gin.Context) {
 	var images []db.Image
 	if err := c.BindJSON(&images); err != nil {
 		c.JSON(400, gin.H{"status": "bad", "msg": "bad json format"})

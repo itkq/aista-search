@@ -35,7 +35,7 @@ func EpisodePOST(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "ok", "id": ep.ID})
 }
 
-func EpisodeUpdate(c *gin.Context) {
+func EpisodeUpdatePOST(c *gin.Context) {
 	id, _ := strconv.Atoi(c.PostForm("id"))
 	title := c.PostForm("title")
 	status, _ := strconv.ParseUint(c.PostForm("status"), 10, 16)
