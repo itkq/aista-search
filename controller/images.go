@@ -39,13 +39,13 @@ func ImagesUpdate(c *gin.Context) {
 }
 
 func ImagesGET(c *gin.Context) {
-	episode_id, err := strconv.Atoi(c.Query("episode_id"))
+	episodeID, err := strconv.Atoi(c.Query("episode_id"))
 	if err != nil {
 		c.JSON(400, gin.H{"status": "bad", "msg": "request error"})
 		return
 	}
 
-	images, err := db.GetImagesByEpisodeId(episode_id)
+	images, err := db.GetImagesByEpisodeID(episodeID)
 	if err != nil {
 		pp.Println(err)
 		c.JSON(500, gin.H{"status": "bad", "msg": "db error"})

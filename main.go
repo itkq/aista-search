@@ -7,6 +7,7 @@ import (
 	"aista-search/session"
 	"aista-search/view"
 	"aista-search/view/plugin"
+	_ "github.com/go-sql-driver/mysql"
 	"net/http"
 )
 

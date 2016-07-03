@@ -28,11 +28,11 @@ func TestCreateImages(t *testing.T) {
 
 	var request []db.Image
 	request = append(request, db.Image{
-		EpisodeId: 1,
+		EpisodeID: 1,
 		Path:      "img/001/001.jpg",
 	})
 	request = append(request, db.Image{
-		EpisodeId: 1,
+		EpisodeID: 1,
 		Path:      "img/001/002.jpg",
 	})
 
@@ -79,11 +79,11 @@ func TestGetImages(t *testing.T) {
 
 	var request []db.Image
 	request = append(request, db.Image{
-		EpisodeId: 1,
+		EpisodeID: 1,
 		Path:      "img/001/003.jpg",
 	})
 	request = append(request, db.Image{
-		EpisodeId: 1,
+		EpisodeID: 1,
 		Path:      "img/001/004.jpg",
 	})
 
@@ -115,17 +115,17 @@ func TestUpdateImages(t *testing.T) {
 		panic(err)
 	}
 
-	episode_id := 1
+	episodeID := 1
 	path1 := "img/001/001.jpg"
 	path2 := "img/001/002.jpg"
 
 	var request []db.Image
 	request = append(request, db.Image{
-		EpisodeId: episode_id,
+		EpisodeID: episodeID,
 		Path:      path1,
 	})
 	request = append(request, db.Image{
-		EpisodeId: episode_id,
+		EpisodeID: episodeID,
 		Path:      path2,
 	})
 
@@ -149,7 +149,7 @@ func TestUpdateImages(t *testing.T) {
 	var request2 []db.Image
 	request2 = append(request2, db.Image{
 		Path: path1,
-		Url: sql.NullString{
+		URL: sql.NullString{
 			Valid:  true,
 			String: urls[path1],
 		},
@@ -160,7 +160,7 @@ func TestUpdateImages(t *testing.T) {
 	})
 	request2 = append(request2, db.Image{
 		Path: path2,
-		Url: sql.NullString{
+		URL: sql.NullString{
 			Valid:  true,
 			String: urls[path2],
 		},
@@ -179,14 +179,14 @@ func TestUpdateImages(t *testing.T) {
 	)
 
 	body := httpGet(
-		ts.URL+"/api/images?episode_id="+strconv.Itoa(episode_id),
+		ts.URL+"/api/images?episode_id="+strconv.Itoa(episodeID),
 		map[string]string{},
 	)
 
 	var actual ImageResponse
 	json.Unmarshal(body, &actual)
 	for _, img := range actual.Images {
-		if img.Url.String != urls[img.Path] || img.Sentence.String != sentences[img.Path] {
+		if img.URL.String != urls[img.Path] || img.Sentence.String != sentences[img.Path] {
 			pp.Println(img)
 			t.Error("response error")
 		}

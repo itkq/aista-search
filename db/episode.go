@@ -5,7 +5,7 @@ import (
 )
 
 type Episode struct {
-	Id        int       `db:"id" json:"id"`
+	ID        int       `db:"id" json:"id"`
 	Title     string    `db:"title" json:"title"`
 	Status    uint      `db:"status" json:"status"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
@@ -41,7 +41,7 @@ func GetEpisodes() (*[]Episode, error) {
 
 func CreateEpisode(id int, title string, status uint) (*Episode, error) {
 	episode := Episode{
-		Id:        id,
+		ID:        id,
 		Title:     title,
 		Status:    status,
 		CreatedAt: time.Now(),
@@ -87,7 +87,7 @@ func GetLatestEpisode() (*Episode, error) {
 
 // unique check
 func (e *Episode) validate() (bool, error) {
-	count, _ := dbMap.SelectInt("SELECT count(*) FROM episodes WHERE id=?", e.Id)
+	count, _ := dbMap.SelectInt("SELECT count(*) FROM episodes WHERE id=?", e.ID)
 	if count > 0 {
 		return false, newValidateError("Duplicate record in episodes")
 	}

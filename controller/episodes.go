@@ -32,7 +32,7 @@ func EpisodePOST(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"status": "ok", "id": ep.Id})
+	c.JSON(200, gin.H{"status": "ok", "id": ep.ID})
 }
 
 func EpisodeUpdate(c *gin.Context) {
@@ -61,7 +61,7 @@ func LatestEpisodeGET(c *gin.Context) {
 		return
 	}
 
-	if ep.Id == 0 {
+	if ep.ID == 0 {
 		c.JSON(400, gin.H{"status": "bad", "msg": "no episode"})
 	}
 

@@ -9,7 +9,7 @@ import (
 
 type EpisodeResponse struct {
 	Status  string     `json:"status"`
-	Id      int        `json:"id"`
+	ID      int        `json:"id"`
 	Episode db.Episode `json:"episode"`
 	Message string     `json:"msg"`
 }
@@ -33,7 +33,7 @@ func TestCreateEpisode(t *testing.T) {
 
 	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	expected := EpisodeResponse{Status: "ok", Id: 1}
+	expected := EpisodeResponse{Status: "ok", ID: db.EpCreated}
 
 	if actual != expected {
 		pp.Println(actual)
@@ -49,7 +49,7 @@ func TestCreateEpisode(t *testing.T) {
 
 	var actual2 EpisodeResponse
 	json.Unmarshal(body, &actual2)
-	expected = EpisodeResponse{Status: "bad", Id: 0}
+	expected = EpisodeResponse{Status: "bad", ID: 0}
 
 	if actual2 != expected {
 		pp.Println(actual2)
@@ -96,7 +96,7 @@ func TestGetEpisode(t *testing.T) {
 	json.Unmarshal(body, &actual2)
 
 	ep := actual2.Episode
-	if ep.Id != 2 || ep.Title != "fuga" || ep.Status != db.EpCreated {
+	if ep.ID != 2 || ep.Title != "fuga" || ep.Status != db.EpCreated {
 		pp.Println(actual2)
 		t.Error("response error")
 	}
@@ -105,13 +105,13 @@ func TestGetEpisode(t *testing.T) {
 	ptr, _ := db.GetEpisodes()
 	episodes := *ptr
 	ep1 := episodes[0]
-	if ep1.Id != 1 || ep1.Title != "hoge" {
+	if ep1.ID != 1 || ep1.Title != "hoge" {
 		pp.Println(actual)
 		t.Error("db error")
 	}
 
 	ep2 := episodes[1]
-	if ep2.Id != 2 || ep2.Title != "fuga" {
+	if ep2.ID != 2 || ep2.Title != "fuga" {
 		pp.Println(actual)
 		t.Error("db error")
 	}
@@ -129,7 +129,7 @@ func TestUpdateEpisode(t *testing.T) {
 
 	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	expected := EpisodeResponse{Status: "ok", Id: 1}
+	expected := EpisodeResponse{Status: "ok", ID: 1}
 
 	if actual != expected {
 		pp.Println(actual)
@@ -152,7 +152,7 @@ func TestUpdateEpisode(t *testing.T) {
 	json.Unmarshal(body, &actual2)
 	ep := actual2.Episode
 
-	if ep.Id != 1 || ep.Title != "fuga" || ep.Status != db.EpCreated {
+	if ep.ID != 1 || ep.Title != "fuga" || ep.Status != db.EpCreated {
 		pp.Println(actual2)
 		t.Error("response error")
 	}

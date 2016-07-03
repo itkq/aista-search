@@ -12,7 +12,7 @@
 
 	{{ range .episodes }}
 		<tr>
-			<td align="left">{{ .Id }}</td>
+			<td align="left">{{ .ID }}</td>
 			<td align="left">{{ .Title }}</td>
 			<td align="left">{{ .Status | EpisodeStatus }}</td>
 			<td align="left">{{ .CreatedAt | FormatTime }}</td>

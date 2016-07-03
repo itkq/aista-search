@@ -5,6 +5,7 @@ import (
 	"aista-search/db"
 	"aista-search/route"
 	"bytes"
+	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
