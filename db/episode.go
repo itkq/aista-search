@@ -12,29 +12,22 @@ type Episode struct {
 }
 
 const (
-	Created = iota
-	Collected
-	Crassified
-	Extracted
-	Registered
+	EpCreated = iota + 1
+	EpRetrieved
+	EpRegistered
 )
 
 func (e *Episode) GetStatus() string {
 	switch e.Status {
-	case Created:
+	case EpCreated:
 		return "作成済み"
-	case Collected:
+	case EpRetrieved:
 		return "画像収集済み"
-	case Crassified:
-		return "振り分け済み"
-	case Extracted:
-		return "文字抽出済み"
-	case Registered:
+	case EpRegistered:
 		return "登録済み"
 	default:
 		return "未分類"
 	}
-
 }
 
 func GetEpisodes() (*[]Episode, error) {

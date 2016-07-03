@@ -11,6 +11,7 @@ type EpisodeResponse struct {
 	Status  string     `json:"status"`
 	Id      int        `json:"id"`
 	Episode db.Episode `json:"episode"`
+	Message string     `json:"msg"`
 }
 
 func initEpisodes() {
@@ -95,8 +96,8 @@ func TestGetEpisode(t *testing.T) {
 	json.Unmarshal(body, &actual2)
 
 	ep := actual2.Episode
-	if ep.Id != 2 || ep.Title != "fuga" || ep.Status != 0 {
-		pp.Println(actual)
+	if ep.Id != 2 || ep.Title != "fuga" || ep.Status != db.EpCreated {
+		pp.Println(actual2)
 		t.Error("response error")
 	}
 
@@ -151,7 +152,7 @@ func TestUpdateEpisode(t *testing.T) {
 	json.Unmarshal(body, &actual2)
 	ep := actual2.Episode
 
-	if ep.Id != 1 || ep.Title != "fuga" || ep.Status != 1 {
+	if ep.Id != 1 || ep.Title != "fuga" || ep.Status != db.EpCreated {
 		pp.Println(actual2)
 		t.Error("response error")
 	}

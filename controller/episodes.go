@@ -25,7 +25,7 @@ func EpisodePOST(c *gin.Context) {
 		return
 	}
 
-	ep, err := db.CreateEpisode(id, title, 0)
+	ep, err := db.CreateEpisode(id, title, db.EpCreated)
 
 	if err != nil {
 		c.JSON(500, gin.H{"status": "bad"})
