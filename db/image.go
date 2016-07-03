@@ -33,6 +33,28 @@ func CreateImages(images []Image) error {
 	return tx.Commit()
 }
 
+func GetImages() (*[]Image, error) {
+	var images []Image
+	query := "SELECT * FROM images WHERE sentence IS NOT NULL ORDER BY episode_id, id DESC"
+	if _, err := dbMap.Select(&images, query); err != nil {
+		return nil, err
+	}
+
+	return &images, nil
+}
+
+func GetImagesBySentence(sentence string) (*[]Image, error) {
+	var images []Image
+
+	cond := "%" + sentence + "%"
+	query := "SELECT * FROM images WHERE sentence like ? ORDER BY episode_id, id DESC"
+	if _, err := dbMap.Select(&images, query, cond); err != nil {
+		return nil, err
+	}
+
+	return &images, nil
+}
+
 func GetImagesByEpisodeID(episodeID int) (*[]Image, error) {
 	var images []Image
 	query := "SELECT * FROM images WHERE episode_id=?"
