@@ -2,6 +2,7 @@ package controller
 
 import (
 	"aista-search/db"
+	"aista-search/session"
 	"aista-search/view"
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
@@ -21,6 +22,21 @@ func ImagesPOST(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"status": "ok", "count": len(images)})
+}
+
+func ImageUpdatePOST(c *gin.Context) {
+	id, _ := strconv.Atoi(c.PostForm("id"))
+	sentence := c.PostForm("sentence")
+	sess := session.Instance(c.Request)
+
+	if err := db.UpdateImageSentenceByID(id, sentence); err != nil {
+		sess.AddFlash(view.Flash{"更新エラーです", "error"})
+		sess.Save(c.Request, c.Writer)
+	}
+
+	sess.AddFlash(view.Flash{"更新しました", "success"})
+	sess.Save(c.Request, c.Writer)
+	c.Redirect(302, "/image/"+strconv.Itoa(id))
 }
 
 func ImagesUpdatePOST(c *gin.Context) {
