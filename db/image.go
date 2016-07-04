@@ -15,6 +15,8 @@ type Image struct {
 	UpdatedAt time.Time   `db:"updated_at" json:"updated_at"`
 }
 
+type Images []Image
+
 const (
 	ImagesPerPage = 30
 )
@@ -84,4 +86,13 @@ func UpdateImages(images []Image) error {
 	}
 
 	return tx.Commit()
+}
+
+func (is *Images) Interface() []interface{} {
+	imagesInterface := make([]interface{}, len(*is))
+	for i, v := range *is {
+		imagesInterface[i] = v
+	}
+
+	return imagesInterface
 }

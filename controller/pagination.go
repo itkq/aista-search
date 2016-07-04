@@ -11,17 +11,20 @@ type Pagination struct {
 	List      []interface{}
 }
 
-func NewPagination(list []interface{}, current int, perPage int) *Pagination {
-	listSize := len(list)
+func NewPagination(list []interface{}, current int, perPage int) (*Pagination, error) {
 	var sliceList []interface{}
 
 	offset := (current - 1) * perPage
-	size := offset + perPage
+	listSize := len(list)
 
-	if size <= listSize {
-		sliceList = list[offset:size]
+	if offset == listSize {
+		return nil, newPagingError("List is empty")
+	}
+
+	if listSize-offset <= perPage {
+		sliceList = list[offset:listSize]
 	} else {
-		sliceList = list[offset : listSize-1]
+		sliceList = list[offset : offset+perPage]
 	}
 
 	first := 1
@@ -36,7 +39,7 @@ func NewPagination(list []interface{}, current int, perPage int) *Pagination {
 		prev = 0
 	}
 
-	if current+2 < last {
+	if current+2 <= last {
 		next = current + 1
 	} else {
 		next = 0
@@ -77,5 +80,19 @@ func NewPagination(list []interface{}, current int, perPage int) *Pagination {
 		NextExist: nextExist,
 		Last:      last,
 		List:      sliceList,
-	}
+	}, nil
+}
+
+type PagingError struct {
+	msg string
+}
+
+func (err *PagingError) Error() string {
+	return err.msg
+}
+
+func newPagingError(s string) *PagingError {
+	err := new(PagingError)
+	err.msg = s
+	return err
 }

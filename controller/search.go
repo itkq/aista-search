@@ -34,11 +34,12 @@ func SearchGET(c *gin.Context) {
 		}
 	}
 
-	imagesInterface := make([]interface{}, len(*images))
-	for i, v := range *images {
-		imagesInterface[i] = v
+	imagesVal := db.Images(*images)
+	page, err := NewPagination(imagesVal.Interface(), p, db.ImagesPerPage)
+	if err != nil {
+		c.String(500, "paging error")
+		return
 	}
-	page := NewPagination(imagesInterface, p, db.ImagesPerPage)
 
 	v := view.New(c)
 	v.Name = "search/index"
