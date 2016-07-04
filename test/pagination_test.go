@@ -1,8 +1,8 @@
 package test
 
 import (
-	"aista-search/controller"
 	"aista-search/db"
+	"aista-search/view"
 	"github.com/k0kubun/pp"
 	"testing"
 )
@@ -21,13 +21,13 @@ type testingWrapper testing.T
 
 func TestPagination(t *testing.T) {
 	var images db.Images
-	var rowPage *controller.Pagination
+	var rowPage *view.Pagination
 	var page, expected pagination
 	tw := testingWrapper(*t)
 
 	// Normal list
 	images = newImages(100)
-	rowPage, _ = controller.NewPagination(images.Interface(), 2, db.ImagesPerPage)
+	rowPage, _ = view.NewPagination(images.Interface(), 2, db.ImagesPerPage)
 	tw.assertSize(rowPage.List, db.ImagesPerPage)
 
 	page = convert(*rowPage)
@@ -47,21 +47,21 @@ func TestPagination(t *testing.T) {
 
 	// Empty list
 	images = newImages(0)
-	rowPage, err := controller.NewPagination(images.Interface(), 1, db.ImagesPerPage)
+	rowPage, err := view.NewPagination(images.Interface(), 1, db.ImagesPerPage)
 	if err == nil {
 		t.Error("pagination error")
 	}
 
 	// Empty list for paging
 	images = newImages(db.ImagesPerPage)
-	rowPage, err = controller.NewPagination(images.Interface(), 2, db.ImagesPerPage)
+	rowPage, err = view.NewPagination(images.Interface(), 2, db.ImagesPerPage)
 	if err == nil {
 		t.Error("pagination error")
 	}
 
 	// Single page
 	images = newImages(29)
-	rowPage, _ = controller.NewPagination(images.Interface(), 1, db.ImagesPerPage)
+	rowPage, _ = view.NewPagination(images.Interface(), 1, db.ImagesPerPage)
 	tw.assertSize(rowPage.List, db.ImagesPerPage)
 
 	page = convert(*rowPage)
@@ -81,7 +81,7 @@ func TestPagination(t *testing.T) {
 
 	// Pattern 1
 	images = newImages(140)
-	rowPage, _ = controller.NewPagination(images.Interface(), 4, db.ImagesPerPage)
+	rowPage, _ = view.NewPagination(images.Interface(), 4, db.ImagesPerPage)
 	tw.assertSize(rowPage.List, db.ImagesPerPage)
 
 	page = convert(*rowPage)
@@ -101,7 +101,7 @@ func TestPagination(t *testing.T) {
 
 	// Pattern 2
 	images = newImages(140)
-	rowPage, _ = controller.NewPagination(images.Interface(), 3, db.ImagesPerPage)
+	rowPage, _ = view.NewPagination(images.Interface(), 3, db.ImagesPerPage)
 	tw.assertSize(rowPage.List, db.ImagesPerPage)
 
 	page = convert(*rowPage)
@@ -121,7 +121,7 @@ func TestPagination(t *testing.T) {
 
 	// Pattern 3
 	images = newImages(160)
-	rowPage, _ = controller.NewPagination(images.Interface(), 2, db.ImagesPerPage)
+	rowPage, _ = view.NewPagination(images.Interface(), 2, db.ImagesPerPage)
 	tw.assertSize(rowPage.List, db.ImagesPerPage)
 
 	page = convert(*rowPage)
@@ -146,7 +146,7 @@ func (tw *testingWrapper) assertSize(list []interface{}, size int) {
 	}
 }
 
-func convert(p controller.Pagination) pagination {
+func convert(p view.Pagination) pagination {
 	return pagination{
 		First:     p.First,
 		PrevExist: p.PrevExist,

@@ -1,4 +1,4 @@
-package controller
+package view
 
 type Pagination struct {
 	First     int
