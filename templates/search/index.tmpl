@@ -9,8 +9,21 @@
 	<input type="text" id="query" name="q" value="{{ .q }}">
 	<input type="submit" value="検索"/>
 </form>
-{{ range .images }}
-	<img width="500px" src="{{ .Path }}">
+{{ $q := .q }}
+{{ with .page }}
+  {{ range .List }}
+    <img width="500px" src="{{ .Path }}">
+  {{ end }}
+
+  <div class="pager">
+    {{ if .First }}<a href="/search?p={{ .First }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .First }}]</a>{{ end }}
+    {{ if .PrevExist }}<span>...</span>{{ end }}
+    {{ if .Prev }}<a href="/search?p={{ .Prev }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Prev }}]</a>{{ end }}
+    {{ if .Current }}<span>[{{ .Current }}]</span>{{ end }}
+    {{ if .Next }}<a href="/search?p={{ .Next }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Next }}]</a>{{ end }}
+    {{ if .NextExist }}<span>...</span>{{ end }}
+    {{ if .Last }}<a href="/search?p={{ .Last }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Last }}]</a>{{ end }}
+  </div>
 {{ end }}
 {{ end }}
 {{ define "foot" }}
@@ -19,7 +32,11 @@ $(function(){
   $('form#search').submit(function(){
     action = $(this).attr('action');
     q = $('input[name="q"]').val();
-    $(this).attr('action', action + '?q=' + encodeURIComponent(q));
+    url = action + '?q=' + encodeURIComponent(q)
+    if (Number(p) > 1) {
+      url += '&p=' + p;
+    }
+    $(this).attr('action', url);
   });
 });
 </script>
