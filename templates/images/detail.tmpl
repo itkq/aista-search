@@ -1,0 +1,9 @@
+{{ define "title"}} - 画像詳細{{ end }}
+{{ define "head" }}{{ end }}
+{{ define "content" }}
+<h2>画像詳細</h2>
+{{ with .image }}
+  <img width="800px" src="{{ .Path }}">
+{{ end }}
+{{ end }}
+{{ define "foot" }}{{ end }}

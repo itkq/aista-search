@@ -39,6 +39,16 @@ func CreateImages(images []Image) error {
 	return tx.Commit()
 }
 
+func GetImageByID(id int) (*Image, error) {
+	var image Image
+	query := "SELECT * FROM images WHERE id=?"
+	if err := dbMap.SelectOne(&image, query, id); err != nil {
+		return nil, err
+	}
+
+	return &image, nil
+}
+
 func GetImages(page int) (*[]Image, error) {
 	var images []Image
 	query := "SELECT * FROM images WHERE sentence IS NOT NULL ORDER BY episode_id DESC, id DESC"

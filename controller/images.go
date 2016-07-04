@@ -2,6 +2,7 @@ package controller
 
 import (
 	"aista-search/db"
+	"aista-search/view"
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
 	"strconv"
@@ -36,6 +37,20 @@ func ImagesUpdatePOST(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"status": "ok", "count": len(images)})
+}
+
+func ImageGET(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	image, err := db.GetImageByID(id)
+	if err != nil {
+		c.String(404, "not found")
+		return
+	}
+
+	v := view.New(c)
+	v.Name = "images/detail"
+	v.Vars["image"] = image
+	v.Render()
 }
 
 func ImagesGET(c *gin.Context) {
