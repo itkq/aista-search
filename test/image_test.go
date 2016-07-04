@@ -55,11 +55,13 @@ func TestCreateImages(t *testing.T) {
 func TestGetImages(t *testing.T) {
 	initImages()
 
+	var actual ImageResponse
+
 	body := httpGet(
 		ts.URL+"/api/images",
 		map[string]string{},
 	)
-	var actual ImageResponse
+
 	json.Unmarshal(body, &actual)
 	if actual.Status != "bad" {
 		pp.Println(actual)
@@ -70,10 +72,11 @@ func TestGetImages(t *testing.T) {
 		ts.URL+"/api/images?episode_id=1",
 		map[string]string{},
 	)
-	var actual2 ImageResponse
-	json.Unmarshal(body, &actual2)
-	if len(actual2.Images) != 0 {
-		pp.Println(actual2)
+
+	actual = ImageResponse{}
+	json.Unmarshal(body, &actual)
+	if len(actual.Images) != 0 {
+		pp.Println(actual)
 		t.Error("response error")
 	}
 
@@ -99,16 +102,19 @@ func TestGetImages(t *testing.T) {
 		ts.URL+"/api/images?episode_id=1",
 		map[string]string{},
 	)
-	var actual3 ImageResponse
-	json.Unmarshal(body, &actual3)
-	if len(actual3.Images) != 2 {
-		pp.Println(actual3)
+
+	actual = ImageResponse{}
+	json.Unmarshal(body, &actual)
+	if len(actual.Images) != 2 {
+		pp.Println(actual)
 		t.Error("response error")
 	}
 }
 
 func TestUpdateImages(t *testing.T) {
 	initImages()
+
+	var request []db.Image
 
 	_, err := db.Get().Exec("TRUNCATE TABLE images")
 	if err != nil {
@@ -119,7 +125,6 @@ func TestUpdateImages(t *testing.T) {
 	path1 := "img/001/001.jpg"
 	path2 := "img/001/002.jpg"
 
-	var request []db.Image
 	request = append(request, db.Image{
 		EpisodeID: episodeID,
 		Path:      path1,
@@ -146,19 +151,19 @@ func TestUpdateImages(t *testing.T) {
 		path2: "bar",
 	}
 
-	var request2 []db.Image
-	request2 = append(request2, db.Image{
+	request = []db.Image{}
+	request = append(request, db.Image{
 		Path:     path1,
 		URL:      null.StringFrom(urls[path1]),
 		Sentence: null.StringFrom(sentences[path1]),
 	})
-	request2 = append(request2, db.Image{
+	request = append(request, db.Image{
 		Path:     path2,
 		URL:      null.StringFrom(urls[path2]),
 		Sentence: null.StringFrom(sentences[path2]),
 	})
 
-	jsonBytes, _ = json.Marshal(request2)
+	jsonBytes, _ = json.Marshal(request)
 
 	// Update images
 	httpPostJSON(

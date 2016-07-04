@@ -24,6 +24,8 @@ func initEpisodes() {
 func TestCreateEpisode(t *testing.T) {
 	initEpisodes()
 
+	var actual, expected EpisodeResponse
+
 	// Create episode
 	body := httpPost(
 		ts.URL+"/api/episode/create",
@@ -31,9 +33,8 @@ func TestCreateEpisode(t *testing.T) {
 		map[string]string{"id": "1", "title": "hoge"},
 	)
 
-	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	expected := EpisodeResponse{Status: "ok", ID: db.EpCreated}
+	expected = EpisodeResponse{Status: "ok", ID: db.EpCreated}
 
 	if actual != expected {
 		pp.Println(actual)
@@ -47,12 +48,12 @@ func TestCreateEpisode(t *testing.T) {
 		map[string]string{"id": "1", "title": "fuga"},
 	)
 
-	var actual2 EpisodeResponse
-	json.Unmarshal(body, &actual2)
+	actual = EpisodeResponse{}
+	json.Unmarshal(body, &actual)
 	expected = EpisodeResponse{Status: "bad", ID: 0}
 
-	if actual2 != expected {
-		pp.Println(actual2)
+	if actual != expected {
+		pp.Println(actual)
 		t.Error("response error")
 	}
 }
@@ -60,15 +61,16 @@ func TestCreateEpisode(t *testing.T) {
 func TestGetEpisode(t *testing.T) {
 	initEpisodes()
 
+	var actual, expected EpisodeResponse
+
 	// Get no episode
 	body := httpGet(
 		ts.URL+"/api/episode/latest",
 		map[string]string{},
 	)
 
-	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	expected := EpisodeResponse{Status: "bad"}
+	expected = EpisodeResponse{Status: "bad"}
 	if actual != expected {
 		pp.Println(actual)
 		t.Error("response error")
@@ -92,12 +94,12 @@ func TestGetEpisode(t *testing.T) {
 		map[string]string{},
 	)
 
-	var actual2 EpisodeResponse
-	json.Unmarshal(body, &actual2)
+	actual = EpisodeResponse{}
+	json.Unmarshal(body, &actual)
 
-	ep := actual2.Episode
+	ep := actual.Episode
 	if ep.ID != 2 || ep.Title != "fuga" || ep.Status != db.EpCreated {
-		pp.Println(actual2)
+		pp.Println(actual)
 		t.Error("response error")
 	}
 
@@ -120,6 +122,8 @@ func TestGetEpisode(t *testing.T) {
 func TestUpdateEpisode(t *testing.T) {
 	initEpisodes()
 
+	var actual, expected EpisodeResponse
+
 	// Create episode
 	body := httpPost(
 		ts.URL+"/api/episode/create",
@@ -127,9 +131,8 @@ func TestUpdateEpisode(t *testing.T) {
 		map[string]string{"id": "1", "title": "hoge"},
 	)
 
-	var actual EpisodeResponse
 	json.Unmarshal(body, &actual)
-	expected := EpisodeResponse{Status: "ok", ID: 1}
+	expected = EpisodeResponse{Status: "ok", ID: 1}
 
 	if actual != expected {
 		pp.Println(actual)
@@ -148,12 +151,11 @@ func TestUpdateEpisode(t *testing.T) {
 		map[string]string{},
 	)
 
-	var actual2 EpisodeResponse
-	json.Unmarshal(body, &actual2)
-	ep := actual2.Episode
+	json.Unmarshal(body, &actual)
+	ep := actual.Episode
 
 	if ep.ID != 1 || ep.Title != "fuga" || ep.Status != db.EpCreated {
-		pp.Println(actual2)
+		pp.Println(actual)
 		t.Error("response error")
 	}
 }
