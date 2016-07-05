@@ -21,6 +21,7 @@ func New() *gin.Engine {
 	router.GET("/image/:id", controller.ImageGET)
 	router.POST("/image/update", controller.ImageUpdatePOST)
 	router.GET("/api/images", controller.ImagesGET)
+	router.GET("/api/images/upload", controller.ImagesToUploadGET)
 	router.POST("/api/image/create", controller.ImagesPOST)
 	router.POST("/api/image/update", controller.ImagesUpdatePOST)
 

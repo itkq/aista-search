@@ -81,6 +81,16 @@ func GetImagesByEpisodeID(episodeID int) (*[]Image, error) {
 	return &images, nil
 }
 
+func GetImagesToUpload(cnt int) (*[]Image, error) {
+	var images []Image
+	query := "SELECT * FROM images ORDER BY id LIMIT ?"
+	if _, err := dbMap.Select(&images, query, cnt); err != nil {
+		return nil, err
+	}
+
+	return &images, nil
+}
+
 func UpdateImageSentenceByID(id int, sentence string) error {
 	query := "UPDATE images SET sentence=? WHERE id=?"
 	if _, err := dbMap.Exec(query, sentence, id); err != nil {

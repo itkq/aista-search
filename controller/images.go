@@ -85,3 +85,14 @@ func ImagesGET(c *gin.Context) {
 
 	c.JSON(200, gin.H{"status": "ok", "images": *images})
 }
+
+func ImagesToUploadGET(c *gin.Context) {
+	cnt, _ := strconv.Atoi(c.Query("cnt"))
+	images, err := db.GetImagesToUpload(cnt)
+	if err != nil {
+		c.JSON(500, gin.H{"status": "bad", "msg": "db error"})
+		return
+	}
+
+	c.JSON(200, gin.H{"status": "ok", "images": images})
+}
