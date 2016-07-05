@@ -2,6 +2,7 @@ package controller
 
 import (
 	"aista-search/db"
+	"aista-search/pagination"
 	"aista-search/view"
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
@@ -35,7 +36,7 @@ func SearchGET(c *gin.Context) {
 	}
 
 	imagesVal := db.Images(*images)
-	page, err := view.NewPagination(imagesVal.Interface(), p, db.ImagesPerPage)
+	page, err := pagination.NewPagination(imagesVal.Interface(), p, db.ImagesPerPage)
 	if err != nil {
 		c.String(500, "paging error")
 		return

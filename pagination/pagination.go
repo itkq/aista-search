@@ -1,4 +1,4 @@
-package view
+package pagination
 
 type Pagination struct {
 	First     int
@@ -63,8 +63,6 @@ func NewPagination(list []interface{}, current int, perPage int) (*Pagination, e
 	} else if last == current {
 		current = last
 		last = 0
-	} else if prev == current || next == current {
-		current = 0
 	}
 
 	if last == 1 {
