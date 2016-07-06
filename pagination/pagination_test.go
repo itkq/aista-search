@@ -47,14 +47,25 @@ func TestPagination(t *testing.T) {
 	// Empty list
 	images = newImages(0)
 	rowPage, err := NewPagination(images.Interface(), 1, db.ImagesPerPage)
-	if err == nil {
+	page = convert(*rowPage)
+	expected = pagination{
+		First:     0,
+		PrevExist: false,
+		Prev:      0,
+		Current:   1,
+		Next:      0,
+		NextExist: false,
+		Last:      0,
+	}
+	if err != nil && page != expected {
+		pp.Println(page)
 		t.Error("pagination error")
 	}
 
 	// Empty list for paging
 	images = newImages(db.ImagesPerPage)
 	rowPage, err = NewPagination(images.Interface(), 2, db.ImagesPerPage)
-	if err.Error() != "List is empty" {
+	if err != nil && page != expected {
 		t.Error("pagination error")
 	}
 
@@ -75,6 +86,20 @@ func TestPagination(t *testing.T) {
 	}
 	if page != expected {
 		pp.Println(page)
+		t.Error("pagination error")
+	}
+
+	// Empty list for over offset
+	images = newImages(0)
+	rowPage, err = NewPagination(images.Interface(), 2, db.ImagesPerPage)
+	if err != nil && err.Error() != "not found" {
+		t.Error("pagination error")
+	}
+
+	// List for over offset
+	images = newImages(29)
+	rowPage, err = NewPagination(images.Interface(), 2, db.ImagesPerPage)
+	if err != nil && err.Error() != "not found" {
 		t.Error("pagination error")
 	}
 

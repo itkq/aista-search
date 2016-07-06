@@ -17,8 +17,24 @@ func NewPagination(list []interface{}, current int, perPage int) (*Pagination, e
 	offset := (current - 1) * perPage
 	listSize := len(list)
 
-	if offset == listSize {
-		return nil, newPagingError("List is empty")
+	if listSize == 0 {
+		if current == 1 {
+			return &Pagination{
+				First:     0,
+				PrevExist: false,
+				Prev:      0,
+				Current:   current,
+				Next:      0,
+				NextExist: false,
+				Last:      0,
+				List:      sliceList,
+			}, nil
+		} else {
+			return nil, newPagingError("not found")
+		}
+
+	} else if listSize < offset {
+		return nil, newPagingError("not found")
 	}
 
 	if listSize-offset <= perPage {

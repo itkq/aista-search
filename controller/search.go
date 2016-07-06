@@ -38,7 +38,7 @@ func SearchGET(c *gin.Context) {
 	imagesVal := db.Images(*images)
 	page, err := pagination.NewPagination(imagesVal.Interface(), p, db.ImagesPerPage)
 	if err != nil {
-		c.String(500, "paging error")
+		c.String(404, "404 page not found")
 		return
 	}
 
