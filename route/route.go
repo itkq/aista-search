@@ -4,9 +4,13 @@ import (
 	"aista-search/config"
 	"aista-search/controller"
 	"github.com/gin-gonic/gin"
+	"os"
 )
 
 func New() *gin.Engine {
+	if os.Getenv("GO_ENV") == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	router := gin.Default()
 
 	router.Static("/img", config.GetEnv("IMG_ROOT", "./img"))

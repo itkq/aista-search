@@ -9,7 +9,12 @@ import (
 	"aista-search/view/plugin"
 	_ "github.com/go-sql-driver/mysql"
 	"net/http"
+	"runtime"
 )
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 func main() {
 	config.LoadEnv()
