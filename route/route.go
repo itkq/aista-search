@@ -12,6 +12,7 @@ func New() *gin.Engine {
 	router.Static("/img", config.GetEnv("IMG_ROOT", "./img"))
 
 	router.GET("/", controller.IndexGET)
+	router.GET("/ping", controller.Ping)
 
 	router.GET("/episodes", controller.EpisodesGET)
 	router.POST("/api/episode/create", controller.EpisodePOST)

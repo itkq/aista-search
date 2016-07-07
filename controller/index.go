@@ -10,3 +10,7 @@ func IndexGET(c *gin.Context) {
 	v.Name = "index/index"
 	v.Render()
 }
+
+func Ping(c *gin.Context) {
+	c.String(200, "pong")
+}
