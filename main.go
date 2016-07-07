@@ -25,6 +25,8 @@ func main() {
 	view.LoadPlugins(
 		plugin.FormattedTime(),
 		plugin.EpisodeStatus(),
+		plugin.ImagePath(),
+		plugin.ThumbnailPath(),
 	)
 
 	router := route.New()

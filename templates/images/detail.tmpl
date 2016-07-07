@@ -5,7 +5,7 @@
 <h2>画像詳細</h2>
 <form id="image" method="post" action="/image/update">
 {{ with .image }}
-  <img width="800px" src="{{ .Path }}">
+  <img width="800px" src="{{ .Path | ImagePath }}">
   <input type="hidden" name="id" value="{{ .ID }}">
   <br>
   <label for="sentence">登録文字列:</label>

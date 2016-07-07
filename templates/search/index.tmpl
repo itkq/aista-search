@@ -12,7 +12,7 @@
 {{ $q := .q }}
 {{ with .page }}
   {{ range .List }}
-    <a href="/image/{{ .ID }}"><img width="500px" src="{{ .Path }}"></a>
+    <a href="/image/{{ .ID }}"><img width="500px" src="{{ .Path | ThumbnailPath }}"></a>
   {{ end }}
 
   <div class="pager">
