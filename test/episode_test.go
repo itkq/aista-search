@@ -23,17 +23,18 @@ func initEpisodes() {
 	}
 }
 
-func TestCreateEpisode(t *testing.T) {
+func TestCreateisode(t *testing.T) {
 	initEpisodes()
 
 	var actual EpisodeResponse
 	var body []byte
 
-	// Create episode
-	body = httpPost(
+	// Create isode
+	body = httpRequest(
+		"POST",
 		ts.URL+"/api/episodes/",
-		map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
-		map[string]string{"id": "1", "title": "hoge"},
+		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
+		&map[string]string{"id": "1", "title": "hoge"},
 	)
 
 	json.Unmarshal(body, &actual)
@@ -43,11 +44,12 @@ func TestCreateEpisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Check unique episode
-	body = httpPost(
+	// Check unique isode
+	body = httpRequest(
+		"POST",
 		ts.URL+"/api/episodes/",
-		map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
-		map[string]string{"id": "1", "title": "fuga"},
+		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
+		&map[string]string{"id": "1", "title": "fuga"},
 	)
 
 	actual = EpisodeResponse{}
@@ -59,16 +61,18 @@ func TestCreateEpisode(t *testing.T) {
 	}
 }
 
-func TestGetEpisode(t *testing.T) {
+func TestGetisode(t *testing.T) {
 	initEpisodes()
 
 	var actual EpisodeResponse
 	var body []byte
 
-	// Get no episode
-	body = httpGet(
+	// Get no isode
+	body = httpRequest(
+		"GET",
 		ts.URL+"/api/episodes/",
-		map[string]string{},
+		nil,
+		nil,
 	)
 
 	json.Unmarshal(body, &actual)
@@ -80,19 +84,22 @@ func TestGetEpisode(t *testing.T) {
 	ids := []int{1, 2}
 	titles := []string{"foo", "bar"}
 
-	// Create episode
+	// Create isode
 	for i, _ := range ids {
-		httpPost(
+		httpRequest(
+			"POST",
 			ts.URL+"/api/episodes/",
-			map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
-			map[string]string{"id": strconv.Itoa(ids[i]), "title": titles[i]},
+			&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
+			&map[string]string{"id": strconv.Itoa(ids[i]), "title": titles[i]},
 		)
 	}
 
-	// Get episodes
-	body = httpGet(
+	// Get isodes
+	body = httpRequest(
+		"GET",
 		ts.URL+"/api/episodes/",
-		map[string]string{},
+		nil,
+		nil,
 	)
 
 	actual = EpisodeResponse{}
@@ -104,10 +111,12 @@ func TestGetEpisode(t *testing.T) {
 		}
 	}
 
-	// Get episode
-	body = httpGet(
+	// Get isode
+	body = httpRequest(
+		"GET",
 		ts.URL+"/api/episodes/1",
-		map[string]string{},
+		nil,
+		nil,
 	)
 
 	actual = EpisodeResponse{}
@@ -117,10 +126,12 @@ func TestGetEpisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Get no episode
-	body = httpGet(
+	// Get no isode
+	body = httpRequest(
+		"GET",
 		ts.URL+"/api/episodes/3",
-		map[string]string{},
+		nil,
+		nil,
 	)
 
 	actual = EpisodeResponse{}
@@ -131,24 +142,26 @@ func TestGetEpisode(t *testing.T) {
 	}
 }
 
-func TestUpdateEpisode(t *testing.T) {
+func TestUpdateisode(t *testing.T) {
 	initEpisodes()
 
 	var actual EpisodeResponse
 	var body []byte
 
-	// Create episode
-	httpPost(
+	// Create isode
+	httpRequest(
+		"POST",
 		ts.URL+"/api/episodes/",
-		map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
-		map[string]string{"id": "1", "title": "hoge"},
+		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
+		&map[string]string{"id": "1", "title": "hoge"},
 	)
 
-	// Update episode
-	body = httpPut(
+	// Update isode
+	body = httpRequest(
+		"PUT",
 		ts.URL+"/api/episodes/1",
-		map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
-		map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
+		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
+		&map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
 	)
 	actual = EpisodeResponse{}
 	json.Unmarshal(body, &actual)
@@ -157,10 +170,12 @@ func TestUpdateEpisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Get episode
-	body = httpGet(
+	// Get isode
+	body = httpRequest(
+		"GET",
 		ts.URL+"/api/episodes/1",
-		map[string]string{},
+		nil,
+		nil,
 	)
 
 	actual = EpisodeResponse{}
@@ -170,11 +185,12 @@ func TestUpdateEpisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Update episode error
-	body = httpPut(
+	// Update isode error
+	body = httpRequest(
+		"PUT",
 		ts.URL+"/api/episodes/2",
-		map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
-		map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
+		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
+		&map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
 	)
 	actual = EpisodeResponse{}
 	json.Unmarshal(body, &actual)
@@ -183,10 +199,12 @@ func TestUpdateEpisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Get episode
-	body = httpGet(
+	// Get isode
+	body = httpRequest(
+		"GET",
 		ts.URL+"/api/episodes/2",
-		map[string]string{},
+		nil,
+		nil,
 	)
 	actual = EpisodeResponse{}
 	json.Unmarshal(body, &actual)

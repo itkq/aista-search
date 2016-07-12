@@ -25,54 +25,30 @@ func init() {
 	ts = httptest.NewServer(router)
 }
 
-func httpGet(endpoint string, header map[string]string) []byte {
-	req, _ := http.NewRequest("GET", endpoint, nil)
-	for k, v := range header {
-		req.Header.Set(k, v)
+func httpRequest(
+	method string,
+	endpoint string,
+	header *map[string]string,
+	params *map[string]string,
+) []byte {
+	var req *http.Request
+	var values url.Values = url.Values{}
+	switch method {
+	case "GET":
+		req, _ = http.NewRequest(method, endpoint, nil)
+	case "PUT", "POST":
+		for k, v := range *params {
+			values.Add(k, v)
+		}
+		req, _ = http.NewRequest(method, endpoint, strings.NewReader(values.Encode()))
+	default:
+		panic("method error")
 	}
 
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer res.Body.Close()
-
-	body, _ := ioutil.ReadAll(res.Body)
-	return body
-}
-
-func httpPost(endpoint string, header map[string]string, params map[string]string) []byte {
-	values := url.Values{}
-	for k, v := range params {
-		values.Add(k, v)
-	}
-
-	req, _ := http.NewRequest("POST", endpoint, strings.NewReader(values.Encode()))
-	for k, v := range header {
-		req.Header.Set(k, v)
-	}
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer res.Body.Close()
-
-	body, _ := ioutil.ReadAll(res.Body)
-	return body
-}
-
-func httpPut(endpoint string, header map[string]string, params map[string]string) []byte {
-	values := url.Values{}
-	for k, v := range params {
-		values.Add(k, v)
-	}
-
-	req, _ := http.NewRequest("PUT", endpoint, strings.NewReader(values.Encode()))
-	for k, v := range header {
-		req.Header.Set(k, v)
+	if header != nil {
+		for k, v := range *header {
+			req.Header.Set(k, v)
+		}
 	}
 
 	client := &http.Client{}
