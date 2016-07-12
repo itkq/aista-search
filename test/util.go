@@ -62,8 +62,11 @@ func httpRequest(
 	return body
 }
 
-func httpPostJSON(endpoint string, json []byte) []byte {
-	req, _ := http.NewRequest("POST", endpoint, bytes.NewReader(json))
+func httpRequestJSON(method string, endpoint string, json []byte) []byte {
+	if method != "POST" && method != "PUT" {
+		panic("method error")
+	}
+	req, _ := http.NewRequest(method, endpoint, bytes.NewReader(json))
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

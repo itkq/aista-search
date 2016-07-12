@@ -18,20 +18,21 @@ func New() *gin.Engine {
 	router.GET("/", controller.IndexGET)
 	router.GET("/ping", controller.Ping)
 
-	router.GET("/image/:id", controller.ImageGET)
-	router.POST("/image/update", controller.ImageUpdatePOST)
-	router.GET("/api/images", controller.ImagesGET)
-	router.GET("/api/images/upload", controller.ImagesToUploadGET)
-	router.POST("/api/image/create", controller.ImagesPOST)
-	router.POST("/api/image/update", controller.ImagesUpdatePOST)
+	router.GET("/images/:id", controller.ImageGET)
+	router.POST("/images/:id", controller.ImagePOST)
 
 	router.GET("/search", controller.SearchGET)
+
 	api := router.Group("/api")
 	{
 		api.GET("/episodes/", controller.API.EpisodesGET)
 		api.GET("/episodes/:id", controller.API.EpisodeGET)
 		api.POST("/episodes/", controller.API.EpisodePOST)
 		api.PUT("/episodes/:id", controller.API.EpisodePUT)
+
+		api.GET("/images/", controller.API.ImagesGET)
+		api.POST("/images/", controller.API.ImagesPOST)
+		api.PUT("/images/", controller.API.ImagesPUT)
 	}
 
 	return router

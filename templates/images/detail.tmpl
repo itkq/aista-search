@@ -3,24 +3,23 @@
 {{ define "content" }}
 
 <h2>画像詳細</h2>
-<form id="image" method="post" action="/image/update">
 {{ with .image }}
-  <img width="800px" src="{{ .Path | ImagePath }}">
-  <input type="hidden" name="id" value="{{ .ID }}">
-  <br>
-  <label for="sentence">登録文字列:</label>
-  {{ with .Sentence }}
-	<input type="text" size="64" name="sentence" value="{{ if .Valid }}{{ .String }}{{ end }}">
-  {{ end }}
-  <br>
-  {{ with .URL }}
-	{{ if .Valid }}
-      <label for="url">Twitter画像URL:</label>
-      <input type="text" size="64" readonly="readonly" value="{{ .String }}">
+  <form id="image" method="post" action="/images/{{ .ID }}">
+    <img width="800px" src="{{ .Path | ImagePath }}">
+    <br>
+    <label for="sentence">登録文字列:</label>
+    {{ with .Sentence }}
+  	<input type="text" size="64" name="sentence" value="{{ if .Valid }}{{ .String }}{{ end }}">
     {{ end }}
-  {{ end }}
-  <br>
-  <input type="submit" value="更新する">
+    <br>
+    {{ with .URL }}
+  	{{ if .Valid }}
+        <label for="url">Twitter画像URL:</label>
+        <input type="text" size="64" readonly="readonly" value="{{ .String }}">
+      {{ end }}
+    {{ end }}
+    <br>
+    <input type="submit" value="更新する">
 {{ end }}
 </form>
 
