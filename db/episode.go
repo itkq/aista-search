@@ -30,9 +30,20 @@ func (e *Episode) GetStatus() string {
 	}
 }
 
-func GetEpisodes() (*[]Episode, error) {
+func GetEpisode(id int) (*Episode, error) {
+	var ep Episode
+	query := "SELECT * FROM episodes WHERE id=?"
+	if err := dbMap.SelectOne(&ep, query, id); err != nil {
+		return nil, err
+	}
+
+	return &ep, nil
+}
+
+func GetEpisodes(cnt int) (*[]Episode, error) {
 	var episodes []Episode
-	if _, err := dbMap.Select(&episodes, "SELECT * FROM episodes"); err != nil {
+	query := "SELECT * FROM episodes ORDER BY id LIMIT ?"
+	if _, err := dbMap.Select(&episodes, query, cnt); err != nil {
 		return nil, err
 	}
 
@@ -60,29 +71,23 @@ func CreateEpisode(id int, title string, status uint) (*Episode, error) {
 
 func UpdateEpisode(id int, title string, status uint) error {
 	var query string
+	var values []interface{}
+
 	if title == "" {
 		query = "UPDATE episodes SET status=? WHERE id=?"
-		if _, err := dbMap.Exec(query, status, id); err != nil {
-			return err
-		}
+		values = append(values, interface{}(status))
+		values = append(values, interface{}(id))
 	} else {
 		query = "UPDATE episodes SET title=?, status=? WHERE id=?"
-		if _, err := dbMap.Exec(query, title, status, id); err != nil {
-			return err
-		}
+		values = append(values, interface{}(title))
+		values = append(values, interface{}(status))
+		values = append(values, interface{}(id))
+	}
+	if _, err := dbMap.Exec(query, values...); err != nil {
+		return err
 	}
 
 	return nil
-}
-
-func GetLatestEpisode() (*Episode, error) {
-	var ep Episode
-	query := "SELECT * FROM episodes ORDER BY id DESC LIMIT 1"
-	if err := dbMap.SelectOne(&ep, query); err != nil {
-		return nil, err
-	}
-
-	return &ep, nil
 }
 
 // unique check
