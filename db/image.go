@@ -83,7 +83,7 @@ func GetImagesByEpisodeID(episodeID int) (*[]Image, error) {
 
 func GetImagesToUpload(cnt int) (*[]Image, error) {
 	var images []Image
-	query := "SELECT * FROM images ORDER BY id LIMIT ?"
+	query := "SELECT * FROM images WHERE sentence IS NOT NULL AND url IS NULL ORDER BY id LIMIT ?"
 	if _, err := dbMap.Select(&images, query, cnt); err != nil {
 		return nil, err
 	}
