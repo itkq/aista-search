@@ -1,10 +1,15 @@
-package test
+package controller
 
 import (
+	"aista-search/config"
 	"aista-search/db"
+	"aista-search/test"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
 	"gopkg.in/guregu/null.v3"
+	"net/http/httptest"
+	"os"
 	"strconv"
 	"testing"
 )
@@ -14,6 +19,23 @@ type ImageResponse struct {
 	Message string     `json:"msg"`
 	Count   int        `json:"count"`
 	Images  []db.Image `json:"images"`
+}
+
+var imageTs *httptest.Server
+
+func init() {
+	os.Setenv("GO_ENV", "test")
+	config.LoadEnv()
+	db.Connect()
+
+	router := gin.Default()
+	api := router.Group("/api")
+	{
+		api.GET("/images/", API.ImagesGET)
+		api.POST("/images/", API.ImagesPOST)
+		api.PUT("/images/", API.ImagesPUT)
+	}
+	imageTs = httptest.NewServer(router)
 }
 
 func initImages() {
@@ -42,9 +64,9 @@ func TestCreateImages(t *testing.T) {
 	jsonBytes, _ := json.Marshal(request)
 
 	// Create images
-	body = httpRequestJSON(
+	body = test.HttpRequestJSON(
 		"POST",
-		ts.URL+"/api/images/",
+		imageTs.URL+"/api/images/",
 		jsonBytes,
 	)
 
@@ -61,9 +83,9 @@ func TestGetImages(t *testing.T) {
 	var actual ImageResponse
 	var body []byte
 
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/images/",
+		imageTs.URL+"/api/images/",
 		nil,
 		nil,
 	)
@@ -74,9 +96,9 @@ func TestGetImages(t *testing.T) {
 		t.Error("response error")
 	}
 
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/images/?episode_id=1",
+		imageTs.URL+"/api/images/?episode_id=1",
 		nil,
 		nil,
 	)
@@ -101,15 +123,15 @@ func TestGetImages(t *testing.T) {
 	jsonBytes, _ := json.Marshal(request)
 
 	// Create images
-	httpRequestJSON(
+	test.HttpRequestJSON(
 		"POST",
-		ts.URL+"/api/images/",
+		imageTs.URL+"/api/images/",
 		jsonBytes,
 	)
 
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/images/?episode_id=1",
+		imageTs.URL+"/api/images/?episode_id=1",
 		nil,
 		nil,
 	)
@@ -145,9 +167,9 @@ func TestUpdateImages(t *testing.T) {
 	jsonBytes, _ := json.Marshal(request)
 
 	// Create images
-	httpRequestJSON(
+	test.HttpRequestJSON(
 		"POST",
-		ts.URL+"/api/images/",
+		imageTs.URL+"/api/images/",
 		jsonBytes,
 	)
 
@@ -175,15 +197,15 @@ func TestUpdateImages(t *testing.T) {
 	jsonBytes, _ = json.Marshal(request)
 
 	// Update images
-	httpRequestJSON(
+	test.HttpRequestJSON(
 		"PUT",
-		ts.URL+"/api/images/",
+		imageTs.URL+"/api/images/",
 		jsonBytes,
 	)
 
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/images/?episode_id="+strconv.Itoa(episodeID),
+		imageTs.URL+"/api/images/?episode_id="+strconv.Itoa(episodeID),
 		nil,
 		nil,
 	)

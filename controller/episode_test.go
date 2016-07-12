@@ -1,9 +1,14 @@
-package test
+package controller
 
 import (
+	"aista-search/config"
 	"aista-search/db"
+	"aista-search/test"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
+	"net/http/httptest"
+	"os"
 	"strconv"
 	"testing"
 )
@@ -14,6 +19,24 @@ type EpisodeResponse struct {
 	Episode  db.Episode   `json:"episode"`
 	Episodes []db.Episode `json:"episodes"`
 	Message  string       `json:"msg"`
+}
+
+var episodeTs *httptest.Server
+
+func init() {
+	os.Setenv("GO_ENV", "test")
+	config.LoadEnv()
+	db.Connect()
+
+	router := gin.Default()
+	api := router.Group("/api")
+	{
+		api.GET("/episodes/", API.EpisodesGET)
+		api.GET("/episodes/:id", API.EpisodeGET)
+		api.POST("/episodes/", API.EpisodePOST)
+		api.PUT("/episodes/:id", API.EpisodePUT)
+	}
+	episodeTs = httptest.NewServer(router)
 }
 
 func initEpisodes() {
@@ -30,9 +53,9 @@ func TestCreateisode(t *testing.T) {
 	var body []byte
 
 	// Create isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"POST",
-		ts.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/",
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"id": "1", "title": "hoge"},
 	)
@@ -45,9 +68,9 @@ func TestCreateisode(t *testing.T) {
 	}
 
 	// Check unique isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"POST",
-		ts.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/",
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"id": "1", "title": "fuga"},
 	)
@@ -68,9 +91,9 @@ func TestGetisode(t *testing.T) {
 	var body []byte
 
 	// Get no isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/",
 		nil,
 		nil,
 	)
@@ -86,18 +109,18 @@ func TestGetisode(t *testing.T) {
 
 	// Create isode
 	for i, _ := range ids {
-		httpRequest(
+		test.HttpRequest(
 			"POST",
-			ts.URL+"/api/episodes/",
+			episodeTs.URL+"/api/episodes/",
 			&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 			&map[string]string{"id": strconv.Itoa(ids[i]), "title": titles[i]},
 		)
 	}
 
 	// Get isodes
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/",
 		nil,
 		nil,
 	)
@@ -112,9 +135,9 @@ func TestGetisode(t *testing.T) {
 	}
 
 	// Get isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/episodes/1",
+		episodeTs.URL+"/api/episodes/1",
 		nil,
 		nil,
 	)
@@ -127,9 +150,9 @@ func TestGetisode(t *testing.T) {
 	}
 
 	// Get no isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/episodes/3",
+		episodeTs.URL+"/api/episodes/3",
 		nil,
 		nil,
 	)
@@ -149,17 +172,17 @@ func TestUpdateisode(t *testing.T) {
 	var body []byte
 
 	// Create isode
-	httpRequest(
+	test.HttpRequest(
 		"POST",
-		ts.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/",
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"id": "1", "title": "hoge"},
 	)
 
 	// Update isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"PUT",
-		ts.URL+"/api/episodes/1",
+		episodeTs.URL+"/api/episodes/1",
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
 	)
@@ -171,9 +194,9 @@ func TestUpdateisode(t *testing.T) {
 	}
 
 	// Get isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/episodes/1",
+		episodeTs.URL+"/api/episodes/1",
 		nil,
 		nil,
 	)
@@ -186,9 +209,9 @@ func TestUpdateisode(t *testing.T) {
 	}
 
 	// Update isode error
-	body = httpRequest(
+	body = test.HttpRequest(
 		"PUT",
-		ts.URL+"/api/episodes/2",
+		episodeTs.URL+"/api/episodes/2",
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
 	)
@@ -200,9 +223,9 @@ func TestUpdateisode(t *testing.T) {
 	}
 
 	// Get isode
-	body = httpRequest(
+	body = test.HttpRequest(
 		"GET",
-		ts.URL+"/api/episodes/2",
+		episodeTs.URL+"/api/episodes/2",
 		nil,
 		nil,
 	)

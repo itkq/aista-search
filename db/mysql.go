@@ -3,6 +3,7 @@ package db
 import (
 	"aista-search/config"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/gorp.v1"
 )
 

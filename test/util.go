@@ -1,31 +1,17 @@
 package test
 
 import (
-	"aista-search/config"
-	"aista-search/db"
-	"aista-search/route"
 	"bytes"
-	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"strings"
 )
 
 var ts *httptest.Server
 
-func init() {
-	os.Setenv("GO_ENV", "test")
-	config.LoadEnv()
-	db.Connect()
-
-	router := route.New()
-	ts = httptest.NewServer(router)
-}
-
-func httpRequest(
+func HttpRequest(
 	method string,
 	endpoint string,
 	header *map[string]string,
@@ -62,7 +48,7 @@ func httpRequest(
 	return body
 }
 
-func httpRequestJSON(method string, endpoint string, json []byte) []byte {
+func HttpRequestJSON(method string, endpoint string, json []byte) []byte {
 	if method != "POST" && method != "PUT" {
 		panic("method error")
 	}
