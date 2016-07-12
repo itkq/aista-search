@@ -2,6 +2,8 @@ package db
 
 import (
 	"gopkg.in/guregu/null.v3"
+	"log"
+	"strings"
 	"time"
 )
 
@@ -49,55 +51,55 @@ func GetImageByID(id int) (*Image, error) {
 	return &image, nil
 }
 
-func GetImages(page int) (*[]Image, error) {
+func GetImages(
+	episodeID null.Int,
+	sentence null.String,
+	toSearch bool,
+	toUpload bool,
+	cnt null.Int,
+) (*[]Image, error) {
 	var images []Image
-	query := "SELECT * FROM images WHERE sentence IS NOT NULL ORDER BY episode_id DESC, id DESC"
-	if _, err := dbMap.Select(&images, query); err != nil {
+	var query string
+	var values []interface{}
+	var wheres []string
+	var order string
+
+	if sentence.Valid && sentence.String != "" {
+		wheres = append(wheres, "sentence like ?")
+		values = append(values, "%"+sentence.String+"%")
+	}
+	if episodeID.Valid && episodeID.Int64 != 0 {
+		wheres = append(wheres, "episode_id=?")
+		values = append(values, int(episodeID.Int64))
+	}
+	if toSearch {
+		wheres = append(wheres, "sentence IS NOT NULL")
+	}
+	if toUpload {
+		wheres = append(wheres, "url IS NULL")
+	}
+
+	order = " ORDER BY episode_id DESC, id DESC "
+	if cnt.Valid && cnt.Int64 != 0 {
+		order += " LIMIT ?"
+		values = append(values, int(cnt.Int64))
+	}
+
+	query = "SELECT * FROM images "
+	if len(wheres) > 0 {
+		query += "WHERE "
+		query += strings.Join(wheres, " AND ")
+	}
+	query += order
+
+	log.Println(query)
+	log.Println(values)
+
+	if _, err := dbMap.Select(&images, query, values...); err != nil {
 		return nil, err
 	}
 
 	return &images, nil
-}
-
-func GetImagesBySentence(sentence string, page int) (*[]Image, error) {
-	var images []Image
-
-	cond := "%" + sentence + "%"
-	query := "SELECT * FROM images WHERE sentence like ? ORDER BY episode_id DESC, id DESC"
-	if _, err := dbMap.Select(&images, query, cond); err != nil {
-		return nil, err
-	}
-
-	return &images, nil
-}
-
-func GetImagesByEpisodeID(episodeID int) (*[]Image, error) {
-	var images []Image
-	query := "SELECT * FROM images WHERE episode_id=?"
-	if _, err := dbMap.Select(&images, query, episodeID); err != nil {
-		return nil, err
-	}
-
-	return &images, nil
-}
-
-func GetImagesToUpload(cnt int) (*[]Image, error) {
-	var images []Image
-	query := "SELECT * FROM images WHERE sentence IS NOT NULL AND url IS NULL ORDER BY id LIMIT ?"
-	if _, err := dbMap.Select(&images, query, cnt); err != nil {
-		return nil, err
-	}
-
-	return &images, nil
-}
-
-func UpdateImageSentenceByID(id int, sentence string) error {
-	query := "UPDATE images SET sentence=? WHERE id=?"
-	if _, err := dbMap.Exec(query, sentence, id); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func UpdateImages(images []Image) error {

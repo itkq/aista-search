@@ -6,17 +6,22 @@ import (
 	"aista-search/view"
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
+	"gopkg.in/guregu/null.v3"
 	"strconv"
 )
 
 func (a *api) ImagesGET(c *gin.Context) {
 	episodeID, err := strconv.Atoi(c.Query("episode_id"))
-	if err != nil {
-		c.JSON(400, gin.H{"status": "bad", "msg": "request error"})
-		return
-	}
+	toUpload, _ := strconv.ParseBool(c.Query("to_upload"))
+	cnt, _ := strconv.Atoi(c.Query("cnt"))
 
-	images, err := db.GetImagesByEpisodeID(episodeID)
+	images, err := db.GetImages(
+		null.IntFrom(int64(episodeID)),
+		null.NewString("", false),
+		false,
+		toUpload,
+		null.IntFrom(int64(cnt)),
+	)
 	if err != nil {
 		pp.Println(err)
 		c.JSON(500, gin.H{"status": "bad", "msg": "db error"})
@@ -62,25 +67,25 @@ func ImagePOST(c *gin.Context) {
 	sentence := c.PostForm("sentence")
 	sess := session.Instance(c.Request)
 
-	if err := db.UpdateImageSentenceByID(id, sentence); err != nil {
+	var images []db.Image
+	image, err := db.GetImageByID(id)
+	if err != nil {
 		sess.AddFlash(view.Flash{"更新エラーです", "error"})
 		sess.Save(c.Request, c.Writer)
+	} else {
+		image.Sentence = null.StringFrom(sentence)
+		images = append(images, *image)
+
+		if err := db.UpdateImages(images); err != nil {
+			sess.AddFlash(view.Flash{"更新エラーです", "error"})
+			sess.Save(c.Request, c.Writer)
+		} else {
+			sess.AddFlash(view.Flash{"更新しました", "success"})
+			sess.Save(c.Request, c.Writer)
+		}
 	}
 
-	sess.AddFlash(view.Flash{"更新しました", "success"})
-	sess.Save(c.Request, c.Writer)
 	c.Redirect(302, "/images/"+strconv.Itoa(id))
-}
-
-func ImagesToUploadGET(c *gin.Context) {
-	cnt, _ := strconv.Atoi(c.Query("cnt"))
-	images, err := db.GetImagesToUpload(cnt)
-	if err != nil {
-		c.JSON(500, gin.H{"status": "bad", "msg": "db error"})
-		return
-	}
-
-	c.JSON(200, gin.H{"status": "ok", "images": images})
 }
 
 func ImageGET(c *gin.Context) {

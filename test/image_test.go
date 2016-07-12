@@ -69,7 +69,7 @@ func TestGetImages(t *testing.T) {
 	)
 
 	json.Unmarshal(body, &actual)
-	if actual.Status != "bad" {
+	if actual.Status != "ok" || len(actual.Images) != 0 {
 		pp.Println(actual)
 		t.Error("response error")
 	}
@@ -109,7 +109,7 @@ func TestGetImages(t *testing.T) {
 
 	body = httpRequest(
 		"GET",
-		ts.URL+"/api/images?episode_id=1",
+		ts.URL+"/api/images/?episode_id=1",
 		nil,
 		nil,
 	)

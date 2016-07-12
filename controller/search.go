@@ -6,6 +6,7 @@ import (
 	"aista-search/view"
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
+	"gopkg.in/guregu/null.v3"
 	"strconv"
 )
 
@@ -19,20 +20,17 @@ func SearchGET(c *gin.Context) {
 	}
 
 	q := c.Query("q")
-	if q == "" {
-		images, err = db.GetImages(p)
-		if err != nil {
-			pp.Println(err)
-			c.String(500, "internal error")
-			return
-		}
-	} else {
-		images, err = db.GetImagesBySentence(q, p)
-		if err != nil {
-			pp.Println(err)
-			c.String(500, "internal error")
-			return
-		}
+	images, err = db.GetImages(
+		null.NewInt(0, false),
+		null.StringFrom(q),
+		true,
+		false,
+		null.NewInt(0, false),
+	)
+	if err != nil {
+		pp.Println(err)
+		c.String(500, "internal error")
+		return
 	}
 
 	imagesVal := db.Images(*images)
