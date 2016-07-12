@@ -26,6 +26,9 @@ func initImages() {
 func TestCreateImages(t *testing.T) {
 	initImages()
 
+	var actual ImageResponse
+	var body []byte
+
 	var request []db.Image
 	request = append(request, db.Image{
 		EpisodeID: 1,
@@ -39,12 +42,12 @@ func TestCreateImages(t *testing.T) {
 	jsonBytes, _ := json.Marshal(request)
 
 	// Create images
-	body := httpPostJSON(
-		ts.URL+"/api/image/create",
+	body = httpRequestJSON(
+		"POST",
+		ts.URL+"/api/images/",
 		jsonBytes,
 	)
 
-	var actual ImageResponse
 	json.Unmarshal(body, &actual)
 	if actual.Count != 2 {
 		pp.Println(actual)
@@ -56,10 +59,13 @@ func TestGetImages(t *testing.T) {
 	initImages()
 
 	var actual ImageResponse
+	var body []byte
 
-	body := httpGet(
-		ts.URL+"/api/images",
-		map[string]string{},
+	body = httpRequest(
+		"GET",
+		ts.URL+"/api/images/",
+		nil,
+		nil,
 	)
 
 	json.Unmarshal(body, &actual)
@@ -68,9 +74,11 @@ func TestGetImages(t *testing.T) {
 		t.Error("response error")
 	}
 
-	body = httpGet(
-		ts.URL+"/api/images?episode_id=1",
-		map[string]string{},
+	body = httpRequest(
+		"GET",
+		ts.URL+"/api/images/?episode_id=1",
+		nil,
+		nil,
 	)
 
 	actual = ImageResponse{}
@@ -93,14 +101,17 @@ func TestGetImages(t *testing.T) {
 	jsonBytes, _ := json.Marshal(request)
 
 	// Create images
-	httpPostJSON(
-		ts.URL+"/api/image/create",
+	httpRequestJSON(
+		"POST",
+		ts.URL+"/api/images/",
 		jsonBytes,
 	)
 
-	body = httpGet(
+	body = httpRequest(
+		"GET",
 		ts.URL+"/api/images?episode_id=1",
-		map[string]string{},
+		nil,
+		nil,
 	)
 
 	actual = ImageResponse{}
@@ -114,17 +125,14 @@ func TestGetImages(t *testing.T) {
 func TestUpdateImages(t *testing.T) {
 	initImages()
 
-	var request []db.Image
-
-	_, err := db.Get().Exec("TRUNCATE TABLE images")
-	if err != nil {
-		panic(err)
-	}
+	var actual ImageResponse
+	var body []byte
 
 	episodeID := 1
 	path1 := "img/001/001.jpg"
 	path2 := "img/001/002.jpg"
 
+	var request []db.Image
 	request = append(request, db.Image{
 		EpisodeID: episodeID,
 		Path:      path1,
@@ -137,8 +145,9 @@ func TestUpdateImages(t *testing.T) {
 	jsonBytes, _ := json.Marshal(request)
 
 	// Create images
-	httpPostJSON(
-		ts.URL+"/api/image/create",
+	httpRequestJSON(
+		"POST",
+		ts.URL+"/api/images/",
 		jsonBytes,
 	)
 
@@ -166,17 +175,19 @@ func TestUpdateImages(t *testing.T) {
 	jsonBytes, _ = json.Marshal(request)
 
 	// Update images
-	httpPostJSON(
-		ts.URL+"/api/image/update",
+	httpRequestJSON(
+		"PUT",
+		ts.URL+"/api/images/",
 		jsonBytes,
 	)
 
-	body := httpGet(
-		ts.URL+"/api/images?episode_id="+strconv.Itoa(episodeID),
-		map[string]string{},
+	body = httpRequest(
+		"GET",
+		ts.URL+"/api/images/?episode_id="+strconv.Itoa(episodeID),
+		nil,
+		nil,
 	)
 
-	var actual ImageResponse
 	json.Unmarshal(body, &actual)
 	for _, img := range actual.Images {
 		if img.URL.String != urls[img.Path] || img.Sentence.String != sentences[img.Path] {
