@@ -22,11 +22,15 @@ type ImageResponse struct {
 }
 
 var imageTs *httptest.Server
+var imageToken string
 
 func init() {
 	os.Setenv("GO_ENV", "test")
 	config.LoadEnv()
 	db.Connect()
+
+	episodeToken = "098f6bcd4621d373cade4e832627b4f6"
+	db.CreateToken(episodeToken)
 
 	router := gin.Default()
 	api := router.Group("/api")
@@ -66,7 +70,7 @@ func TestCreateImages(t *testing.T) {
 	// Create images
 	body = test.HttpRequestJSON(
 		"POST",
-		imageTs.URL+"/api/images/",
+		imageTs.URL+"/api/images/?token="+imageToken,
 		jsonBytes,
 	)
 
@@ -85,7 +89,7 @@ func TestGetImages(t *testing.T) {
 
 	body = test.HttpRequest(
 		"GET",
-		imageTs.URL+"/api/images/",
+		imageTs.URL+"/api/images/?token="+imageToken,
 		nil,
 		nil,
 	)
@@ -98,7 +102,7 @@ func TestGetImages(t *testing.T) {
 
 	body = test.HttpRequest(
 		"GET",
-		imageTs.URL+"/api/images/?episode_id=1",
+		imageTs.URL+"/api/images/?episode_id=1&token="+imageToken,
 		nil,
 		nil,
 	)
@@ -131,7 +135,7 @@ func TestGetImages(t *testing.T) {
 
 	body = test.HttpRequest(
 		"GET",
-		imageTs.URL+"/api/images/?episode_id=1",
+		imageTs.URL+"/api/images/?episode_id=1&token="+imageToken,
 		nil,
 		nil,
 	)
@@ -169,7 +173,7 @@ func TestUpdateImages(t *testing.T) {
 	// Create images
 	test.HttpRequestJSON(
 		"POST",
-		imageTs.URL+"/api/images/",
+		imageTs.URL+"/api/images/?token="+imageToken,
 		jsonBytes,
 	)
 
@@ -199,13 +203,13 @@ func TestUpdateImages(t *testing.T) {
 	// Update images
 	test.HttpRequestJSON(
 		"PUT",
-		imageTs.URL+"/api/images/",
+		imageTs.URL+"/api/images/?token="+imageToken,
 		jsonBytes,
 	)
 
 	body = test.HttpRequest(
 		"GET",
-		imageTs.URL+"/api/images/?episode_id="+strconv.Itoa(episodeID),
+		imageTs.URL+"/api/images/?episode_id="+strconv.Itoa(episodeID)+"&token="+imageToken,
 		nil,
 		nil,
 	)

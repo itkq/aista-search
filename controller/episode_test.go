@@ -22,11 +22,15 @@ type EpisodeResponse struct {
 }
 
 var episodeTs *httptest.Server
+var episodeToken string
 
 func init() {
 	os.Setenv("GO_ENV", "test")
 	config.LoadEnv()
 	db.Connect()
+
+	episodeToken = "098f6bcd4621d373cade4e832627b4f6"
+	db.CreateToken(episodeToken)
 
 	router := gin.Default()
 	api := router.Group("/api")
@@ -40,7 +44,12 @@ func init() {
 }
 
 func initEpisodes() {
-	_, err := db.Get().Exec("TRUNCATE TABLE episodes")
+	var err error
+	_, err = db.Get().Exec("TRUNCATE TABLE episodes")
+	if err != nil {
+		panic(err)
+	}
+	_, err = db.Get().Exec("TRUNCATE TABLE tokens")
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +64,7 @@ func TestCreateisode(t *testing.T) {
 	// Create isode
 	body = test.HttpRequest(
 		"POST",
-		episodeTs.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/?token="+episodeToken,
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"id": "1", "title": "hoge"},
 	)
@@ -70,7 +79,7 @@ func TestCreateisode(t *testing.T) {
 	// Check unique isode
 	body = test.HttpRequest(
 		"POST",
-		episodeTs.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/?token="+episodeToken,
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"id": "1", "title": "fuga"},
 	)
@@ -93,7 +102,7 @@ func TestGetisode(t *testing.T) {
 	// Get no isode
 	body = test.HttpRequest(
 		"GET",
-		episodeTs.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/?token="+episodeToken,
 		nil,
 		nil,
 	)
@@ -111,7 +120,7 @@ func TestGetisode(t *testing.T) {
 	for i, _ := range ids {
 		test.HttpRequest(
 			"POST",
-			episodeTs.URL+"/api/episodes/",
+			episodeTs.URL+"/api/episodes/?token="+episodeToken,
 			&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 			&map[string]string{"id": strconv.Itoa(ids[i]), "title": titles[i]},
 		)
@@ -137,7 +146,7 @@ func TestGetisode(t *testing.T) {
 	// Get isode
 	body = test.HttpRequest(
 		"GET",
-		episodeTs.URL+"/api/episodes/1",
+		episodeTs.URL+"/api/episodes/1?token="+episodeToken,
 		nil,
 		nil,
 	)
@@ -152,7 +161,7 @@ func TestGetisode(t *testing.T) {
 	// Get no isode
 	body = test.HttpRequest(
 		"GET",
-		episodeTs.URL+"/api/episodes/3",
+		episodeTs.URL+"/api/episodes/3?token="+episodeToken,
 		nil,
 		nil,
 	)
@@ -174,7 +183,7 @@ func TestUpdateisode(t *testing.T) {
 	// Create isode
 	test.HttpRequest(
 		"POST",
-		episodeTs.URL+"/api/episodes/",
+		episodeTs.URL+"/api/episodes/?token="+episodeToken,
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"id": "1", "title": "hoge"},
 	)
@@ -182,7 +191,7 @@ func TestUpdateisode(t *testing.T) {
 	// Update isode
 	body = test.HttpRequest(
 		"PUT",
-		episodeTs.URL+"/api/episodes/1",
+		episodeTs.URL+"/api/episodes/1?token="+episodeToken,
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
 	)
@@ -196,7 +205,7 @@ func TestUpdateisode(t *testing.T) {
 	// Get isode
 	body = test.HttpRequest(
 		"GET",
-		episodeTs.URL+"/api/episodes/1",
+		episodeTs.URL+"/api/episodes/1?token="+episodeToken,
 		nil,
 		nil,
 	)
@@ -211,7 +220,7 @@ func TestUpdateisode(t *testing.T) {
 	// Update isode error
 	body = test.HttpRequest(
 		"PUT",
-		episodeTs.URL+"/api/episodes/2",
+		episodeTs.URL+"/api/episodes/2?token="+episodeToken,
 		&map[string]string{"Content-Type": "application/x-www-form-urlencoded"},
 		&map[string]string{"title": "fuga", "status": strconv.Itoa(db.EpRetrieved)},
 	)
@@ -225,7 +234,7 @@ func TestUpdateisode(t *testing.T) {
 	// Get isode
 	body = test.HttpRequest(
 		"GET",
-		episodeTs.URL+"/api/episodes/2",
+		episodeTs.URL+"/api/episodes/2?token="+episodeToken,
 		nil,
 		nil,
 	)

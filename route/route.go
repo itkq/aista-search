@@ -3,6 +3,7 @@ package route
 import (
 	"aista-search/config"
 	"aista-search/controller"
+	"aista-search/route/middleware"
 	"github.com/gin-gonic/gin"
 	"os"
 )
@@ -24,6 +25,7 @@ func New() *gin.Engine {
 	router.GET("/search", controller.SearchGET)
 
 	api := router.Group("/api")
+	api.Use(middleware.Auth())
 	{
 		api.GET("/episodes/", controller.API.EpisodesGET)
 		api.GET("/episodes/:id", controller.API.EpisodeGET)

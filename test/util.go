@@ -4,12 +4,9 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
 	"strings"
 )
-
-var ts *httptest.Server
 
 func HttpRequest(
 	method string,
