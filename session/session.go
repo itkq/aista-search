@@ -1,9 +1,9 @@
 package session
 
 import (
+	"aista-search/config"
 	"github.com/gorilla/sessions"
 	"net/http"
-	"os"
 )
 
 var (
@@ -12,11 +12,7 @@ var (
 )
 
 func Configure() {
-	ssecret := os.Getenv("AISTA_SEARCH_SESSION_SECRET")
-	if ssecret == "" {
-		ssecret = "episode solo"
-	}
-
+	ssecret := config.GetEnv("AISTA_SEARCH_SESSION_SECRET", "episode solo")
 	Store = sessions.NewCookieStore([]byte(ssecret))
 	Name = "aista-search"
 }

@@ -7,6 +7,20 @@ import (
 	"gopkg.in/gorp.v1"
 )
 
+type ValidateError struct {
+	msg string
+}
+
+func (err *ValidateError) Error() string {
+	return err.msg
+}
+
+func newValidateError(s string) *ValidateError {
+	err := new(ValidateError)
+	err.msg = s
+	return err
+}
+
 var dbMap *gorp.DbMap
 
 func Get() *gorp.DbMap {
