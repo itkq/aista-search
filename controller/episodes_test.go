@@ -29,6 +29,10 @@ func init() {
 	config.LoadEnv()
 	db.Connect()
 
+	_, err := db.Get().Exec("TRUNCATE TABLE tokens")
+	if err != nil {
+		panic(err)
+	}
 	episodeToken = "098f6bcd4621d373cade4e832627b4f6"
 	db.CreateToken(episodeToken)
 
@@ -44,12 +48,7 @@ func init() {
 }
 
 func initEpisodes() {
-	var err error
-	_, err = db.Get().Exec("TRUNCATE TABLE episodes")
-	if err != nil {
-		panic(err)
-	}
-	_, err = db.Get().Exec("TRUNCATE TABLE tokens")
+	_, err := db.Get().Exec("TRUNCATE TABLE episodes")
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +60,7 @@ func TestCreateisode(t *testing.T) {
 	var actual EpisodeResponse
 	var body []byte
 
-	// Create isode
+	// Create episode
 	body = test.HttpRequest(
 		"POST",
 		episodeTs.URL+"/api/episodes/?token="+episodeToken,
@@ -76,7 +75,7 @@ func TestCreateisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Check unique isode
+	// Check unique episode
 	body = test.HttpRequest(
 		"POST",
 		episodeTs.URL+"/api/episodes/?token="+episodeToken,
@@ -99,7 +98,7 @@ func TestGetisode(t *testing.T) {
 	var actual EpisodeResponse
 	var body []byte
 
-	// Get no isode
+	// Get no episode
 	body = test.HttpRequest(
 		"GET",
 		episodeTs.URL+"/api/episodes/?token="+episodeToken,
@@ -116,7 +115,7 @@ func TestGetisode(t *testing.T) {
 	ids := []int{1, 2}
 	titles := []string{"foo", "bar"}
 
-	// Create isode
+	// Create episode
 	for i, _ := range ids {
 		test.HttpRequest(
 			"POST",
@@ -126,7 +125,7 @@ func TestGetisode(t *testing.T) {
 		)
 	}
 
-	// Get isodes
+	// Get episodes
 	body = test.HttpRequest(
 		"GET",
 		episodeTs.URL+"/api/episodes/",
@@ -143,7 +142,7 @@ func TestGetisode(t *testing.T) {
 		}
 	}
 
-	// Get isode
+	// Get episode
 	body = test.HttpRequest(
 		"GET",
 		episodeTs.URL+"/api/episodes/1?token="+episodeToken,
@@ -158,7 +157,7 @@ func TestGetisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Get no isode
+	// Get no episode
 	body = test.HttpRequest(
 		"GET",
 		episodeTs.URL+"/api/episodes/3?token="+episodeToken,
@@ -180,7 +179,7 @@ func TestUpdateisode(t *testing.T) {
 	var actual EpisodeResponse
 	var body []byte
 
-	// Create isode
+	// Create episode
 	test.HttpRequest(
 		"POST",
 		episodeTs.URL+"/api/episodes/?token="+episodeToken,
@@ -188,7 +187,7 @@ func TestUpdateisode(t *testing.T) {
 		&map[string]string{"id": "1", "title": "hoge"},
 	)
 
-	// Update isode
+	// Update episode
 	body = test.HttpRequest(
 		"PUT",
 		episodeTs.URL+"/api/episodes/1?token="+episodeToken,
@@ -202,7 +201,7 @@ func TestUpdateisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Get isode
+	// Get episode
 	body = test.HttpRequest(
 		"GET",
 		episodeTs.URL+"/api/episodes/1?token="+episodeToken,
@@ -217,7 +216,7 @@ func TestUpdateisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Update isode error
+	// Update episode with error
 	body = test.HttpRequest(
 		"PUT",
 		episodeTs.URL+"/api/episodes/2?token="+episodeToken,
@@ -231,7 +230,7 @@ func TestUpdateisode(t *testing.T) {
 		t.Error("response error")
 	}
 
-	// Get isode
+	// Get episode
 	body = test.HttpRequest(
 		"GET",
 		episodeTs.URL+"/api/episodes/2?token="+episodeToken,

@@ -29,8 +29,12 @@ func init() {
 	config.LoadEnv()
 	db.Connect()
 
-	episodeToken = "098f6bcd4621d373cade4e832627b4f6"
-	db.CreateToken(episodeToken)
+	_, err := db.Get().Exec("TRUNCATE TABLE tokens")
+	if err != nil {
+		panic(err)
+	}
+	imageToken = "098f6bcd4621d373cade4e832627b4f6"
+	db.CreateToken(imageToken)
 
 	router := gin.Default()
 	api := router.Group("/api")
