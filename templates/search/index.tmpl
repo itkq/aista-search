@@ -1,10 +1,10 @@
 {{ define "title"}} - 画像検索{{ end }}
 {{ define "head" }}
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="/js/jquery.min.js"></script>
 {{ end }}
 {{ define "content" }}
 <h2>画像検索</h2>
-<form id="search" method="get" action="/search">
+<form id="search" method="get" action="/search/">
 	<label for="query">検索キーワード:</label>
 	<input type="text" id="query" name="q" value="{{ .q }}">
 	<input type="submit" value="検索"/>
@@ -16,13 +16,13 @@
   {{ end }}
 
   <div class="pager">
-    {{ if .First }}<a href="/search?p={{ .First }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .First }}]</a>{{ end }}
+    {{ if .First }}<a href="/search/?p={{ .First }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .First }}]</a>{{ end }}
     {{ if .PrevExist }}<span>...</span>{{ end }}
-    {{ if .Prev }}<a href="/search?p={{ .Prev }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Prev }}]</a>{{ end }}
+    {{ if .Prev }}<a href="/search/?p={{ .Prev }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Prev }}]</a>{{ end }}
     {{ if .Current }}<span>[{{ .Current }}]</span>{{ end }}
-    {{ if .Next }}<a href="/search?p={{ .Next }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Next }}]</a>{{ end }}
+    {{ if .Next }}<a href="/search/?p={{ .Next }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Next }}]</a>{{ end }}
     {{ if .NextExist }}<span>...</span>{{ end }}
-    {{ if .Last }}<a href="/search?p={{ .Last }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Last }}]</a>{{ end }}
+    {{ if .Last }}<a href="/search/?p={{ .Last }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Last }}]</a>{{ end }}
   </div>
 {{ end }}
 {{ end }}
