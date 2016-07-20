@@ -21,7 +21,10 @@ func newValidateError(s string) *ValidateError {
 	return err
 }
 
-var dbMap *gorp.DbMap
+var (
+	dbMap   *gorp.DbMap
+	imgRoot string
+)
 
 func Get() *gorp.DbMap {
 	return dbMap
@@ -36,6 +39,7 @@ func Connect() {
 	}
 
 	dbMap = initDb(db)
+	imgRoot = config.GetEnv("IMG_ROOT", "./img")
 }
 
 func initDb(db *sql.DB) *gorp.DbMap {

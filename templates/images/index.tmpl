@@ -1,0 +1,41 @@
+{{ define "title"}} - 画像一覧{{ end }}
+{{ define "head" }}
+<script src="/js/jquery.min.js"></script>
+<script src="/js/image-picker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/image-picker.css">
+{{ end }}
+{{ define "content" }}
+<h2>画像一覧</h2>
+{{ with .page }}
+	<form method="post" action="/images/?p={{ .Current }}">
+	<select name="image_ids[]" multiple="multiple" class="image-picker show-html">
+    {{ range .List }}
+		<option data-img-src="{{ .Path | ThumbnailPath }}" value="{{ .ID }}">{{ .ID }}</option>
+    {{ end }}
+    </select>
+	<input type="submit" value="削除する"/>
+  </form>
+
+  <div class="pager">
+    {{ if .First }}<a href="/images?p={{ .First }}">[{{ .First }}]</a>{{ end }}
+    {{ if .PrevExist }}<span>...</span>{{ end }}
+    {{ if .Prev }}<a href="/images?p={{ .Prev }}">[{{ .Prev }}]</a>{{ end }}
+    {{ if .Current }}<span>[{{ .Current }}]</span>{{ end }}
+    {{ if .Next }}<a href="/images?p={{ .Next }}">[{{ .Next }}]</a>{{ end }}
+    {{ if .NextExist }}<span>...</span>{{ end }}
+    {{ if .Last }}<a href="/images?p={{ .Last }}">[{{ .Last }}]</a>{{ end }}
+  </div>
+{{ end }}
+{{ end }}
+{{ define "foot" }}
+<script type="text/javascript">
+$(function(){
+  $('select.image-picker').imagepicker({
+    hide_select: true,
+  });
+  $('.image_picker_image').each(function(){
+	$(this).attr('width', '250');
+  });
+});
+</script>
+{{ end }}

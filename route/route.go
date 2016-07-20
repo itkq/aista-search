@@ -15,12 +15,16 @@ func New() *gin.Engine {
 	router := gin.Default()
 
 	router.Static("/img", config.GetEnv("IMG_ROOT", "./img"))
+	router.Static("/js", config.GetEnv("JS_ROOT", "./assets/js"))
+	router.Static("/css", config.GetEnv("JS_ROOT", "./assets/css"))
 
 	router.GET("/", controller.IndexGET)
 	router.GET("/ping", controller.Ping)
 
 	router.GET("/images/:id", controller.ImageGET)
+	router.GET("/images/", controller.ImagesGET)
 	router.POST("/images/:id", controller.ImagePOST)
+	router.POST("/images/", controller.ImagesDELETE)
 
 	router.GET("/search", controller.SearchGET)
 

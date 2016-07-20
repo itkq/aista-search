@@ -22,6 +22,7 @@ func SearchGET(c *gin.Context) {
 	q := c.Query("q")
 	images, err = db.GetImages(
 		null.NewInt(0, false),
+		[]int{},
 		null.StringFrom(q),
 		true,
 		false,
