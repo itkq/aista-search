@@ -3,6 +3,9 @@ package db
 import (
 	"gopkg.in/guregu/null.v3"
 	"log"
+	"os"
+	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -53,6 +56,7 @@ func GetImageByID(id int) (*Image, error) {
 
 func GetImages(
 	episodeID null.Int,
+	arrImageID []int,
 	sentence null.String,
 	toSearch bool,
 	toUpload bool,
@@ -71,6 +75,13 @@ func GetImages(
 	if episodeID.Valid && episodeID.Int64 != 0 {
 		wheres = append(wheres, "episode_id=?")
 		values = append(values, int(episodeID.Int64))
+	}
+	if len(arrImageID) > 0 {
+		q := "id IN (?" + strings.Repeat(",?", len(arrImageID)-1) + ")"
+		wheres = append(wheres, q)
+		for _, id := range arrImageID {
+			values = append(values, strconv.Itoa(id))
+		}
 	}
 	if toSearch {
 		wheres = append(wheres, "sentence IS NOT NULL")
@@ -117,6 +128,44 @@ func UpdateImages(images []Image) error {
 	}
 
 	return tx.Commit()
+}
+
+func DeleteImages(images []Image) error {
+	tx, err := dbMap.Begin()
+	if err != nil {
+		return err
+	}
+
+	for _, i := range images {
+		if _, err = tx.Delete(&i); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		path := strings.Replace(i.Path, "./img", imgRoot, 1)
+		thumbPath := strings.Replace(path, "/img", "/img/thumb", 1)
+		log.Println(path)
+		log.Println(thumbPath)
+
+		// Check file is exists
+		if fileExists(path) {
+			if _, err = exec.Command("rm", path).Output(); err != nil {
+				log.Printf("rm error: %s", path)
+			}
+		}
+		if fileExists(thumbPath) {
+			if _, err = exec.Command("rm", thumbPath).Output(); err != nil {
+				log.Printf("rm error: %s", thumbPath)
+			}
+		}
+	}
+
+	return tx.Commit()
+}
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }
 
 func (is *Images) Interface() []interface{} {

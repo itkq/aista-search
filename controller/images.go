@@ -2,6 +2,7 @@ package controller
 
 import (
 	"aista-search/db"
+	"aista-search/pagination"
 	"aista-search/session"
 	"aista-search/view"
 	"github.com/gin-gonic/gin"
@@ -11,12 +12,13 @@ import (
 )
 
 func (a *api) ImagesGET(c *gin.Context) {
-	episodeID, err := strconv.Atoi(c.Query("episode_id"))
+	episodeID, _ := strconv.Atoi(c.Query("episode_id"))
 	toUpload, _ := strconv.ParseBool(c.Query("to_upload"))
 	cnt, _ := strconv.Atoi(c.Query("cnt"))
 
 	images, err := db.GetImages(
 		null.IntFrom(int64(episodeID)),
+		[]int{},
 		null.NewString("", false),
 		false,
 		toUpload,
@@ -100,4 +102,80 @@ func ImageGET(c *gin.Context) {
 	v.Name = "images/detail"
 	v.Vars["image"] = image
 	v.Render()
+}
+
+func ImagesGET(c *gin.Context) {
+	p, _ := strconv.Atoi(c.Query("p"))
+	if p == 0 {
+		p = 1
+	}
+
+	images, err := db.GetImages(
+		null.NewInt(0, false),
+		[]int{},
+		null.NewString("", false),
+		false,
+		false,
+		null.NewInt(0, false),
+	)
+	if err != nil {
+		c.String(404, "not found")
+		return
+	}
+
+	imagesVal := db.Images(*images)
+	page, err := pagination.NewPagination(imagesVal.Interface(), p, db.ImagesPerPage)
+	if err != nil {
+		c.String(404, "404 page not found")
+		return
+	}
+
+	v := view.New(c)
+	v.Name = "images/index"
+	v.Vars["p"] = p
+	v.Vars["page"] = page
+	v.Render()
+}
+
+func ImagesDELETE(c *gin.Context) {
+	var arrImageID []int
+	var images *[]db.Image
+	var err error
+
+	sess := session.Instance(c.Request)
+
+	p := c.DefaultQuery("p", "1")
+	pp.Println(p)
+	c.Request.ParseForm()
+
+	var id int
+	for _, idStr := range c.Request.Form["image_ids[]"] {
+		id, _ = strconv.Atoi(idStr)
+		arrImageID = append(arrImageID, id)
+	}
+
+	if images, err = db.GetImages(
+		null.NewInt(0, false),
+		arrImageID,
+		null.NewString("", false),
+		false,
+		false,
+		null.NewInt(0, false),
+	); err != nil {
+		pp.Println(err)
+		sess.AddFlash(view.Flash{"削除に失敗しました", "error"})
+		sess.Save(c.Request, c.Writer)
+		c.Redirect(302, "/images/?p="+p)
+		return
+	}
+
+	if err = db.DeleteImages(*images); err != nil {
+		sess.AddFlash(view.Flash{"削除に失敗しました", "error"})
+		sess.Save(c.Request, c.Writer)
+	} else {
+		sess.AddFlash(view.Flash{"削除しました", "success"})
+		sess.Save(c.Request, c.Writer)
+	}
+
+	c.Redirect(302, "/images/?p="+p)
 }
