@@ -18,15 +18,13 @@ func New() *gin.Engine {
 	router.Static("/js", config.GetEnv("JS_ROOT", "./assets/js"))
 	router.Static("/css", config.GetEnv("JS_ROOT", "./assets/css"))
 
-	router.GET("/", controller.IndexGET)
+	router.GET("/", controller.SearchGET)
 	router.GET("/ping", controller.Ping)
 
 	router.GET("/images/:id", controller.ImageGET)
 	router.GET("/images/", controller.ImagesGET)
 	router.POST("/images/:id", controller.ImagePOST)
 	router.POST("/images/", controller.ImagesDELETE)
-
-	router.GET("/search", controller.SearchGET)
 
 	api := router.Group("/api")
 	api.Use(middleware.Auth())
