@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  mysqldata:
+    image: busybox
+    volumes:
+      - /var/lib/mysql
+  mysql:
+    image: mysql
+    volumes_from:
+      - mysqldata
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: "${DB_NAME}"
+  app:
+    build: .
+    ports:
+      - 3000:3000
+    links:
+      - mysql:localhost
+    working_dir: /go/src/aista-search
+    volumes:
+      - "${ROOT_DIR}/src/aista-search:/go/src/aista-search"

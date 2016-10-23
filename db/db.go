@@ -32,17 +32,34 @@ func Get() *gorp.DbMap {
 
 func Connect() {
 	driver := config.GetEnv("DB_DRIVER", "mysql")
-	url := config.GetEnv("DB_URL", "")
-	db, err := sql.Open(driver, url)
+
+	// Connect mysql
+	db, err := sql.Open(driver, config.GetEnv("DB_BASE_URL", ""))
 	if err != nil {
 		panic(err)
 	}
 
-	dbMap = initDb(db)
+	initDb(db)
+	// Connect database
+	db, err = sql.Open(driver, config.GetEnv("DB_URL", ""))
+	if err != nil {
+		panic(err)
+	}
+	dbMap = initTable(db)
 	imgRoot = config.GetEnv("IMG_ROOT", "./img")
 }
 
-func initDb(db *sql.DB) *gorp.DbMap {
+func initDb(db *sql.DB) {
+	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
+	// create db if not exists
+	dbName := config.GetEnv("DB_NAME", "aista_search_dev")
+	sql := "CREATE DATABASE IF NOT EXISTS " + dbName + " DEFAULT CHARACTER SET utf8;"
+	if _, err := dbmap.Exec(sql); err != nil {
+		panic(err)
+	}
+}
+
+func initTable(db *sql.DB) *gorp.DbMap {
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF8"}}
 	dbmap.AddTableWithName(Episode{}, "episodes")
 	dbmap.AddTableWithName(Image{}, "images").SetKeys(true, "ID")
