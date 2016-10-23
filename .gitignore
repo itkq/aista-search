@@ -27,3 +27,7 @@ gin-bin
 .env*
 dbconf.yml
 _vendor
+
+
+main
+vendor/
