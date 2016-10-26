@@ -24,6 +24,18 @@ func getSalt() string {
 	return salt
 }
 
+func IsExistsToken() (bool, error) {
+	query := "SELECT COUNT(*) FROM tokens"
+	cnt, err := dbMap.SelectInt(query)
+	checkErr(err)
+
+	if cnt > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
 func CreateToken(md5 string) error {
 	token := makeHash(md5)
 
