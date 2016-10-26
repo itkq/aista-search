@@ -5,10 +5,12 @@ import (
 	"aista-search/util"
 	"bufio"
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"gopkg.in/gorp.v1"
 	"log"
 	"os"
+	"os/exec"
 )
 
 type ValidateError struct {
@@ -40,33 +42,53 @@ func Connect() {
 	driver := config.GetEnv("DB_DRIVER", "mysql")
 
 	// Connect mysql
-	db, err := sql.Open(driver, config.GetEnv("DB_BASE_URL", ""))
+	baseUrl := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/",
+		config.GetEnv("DB_USER", "root"),
+		config.GetEnv("DB_PASS", ""),
+		config.GetEnv("DB_HOST", "localhost"),
+		config.GetEnv("DB_PORT", "3306"),
+	)
+	db, err := sql.Open(driver, baseUrl)
 	checkErr(err)
 
 	initDb(db)
 	// Connect database
-	db, err = sql.Open(driver, config.GetEnv("DB_URL", ""))
+	dbUrl := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s%s",
+		config.GetEnv("DB_USER", "root"),
+		config.GetEnv("DB_PASS", ""),
+		config.GetEnv("DB_HOST", "localhost"),
+		config.GetEnv("DB_PORT", "3306"),
+		config.GetEnv("DB_NAME", "aista_search_dev"),
+		config.GetEnv("DB_OPT", ""),
+	)
+	db, err = sql.Open(driver, dbUrl)
 	checkErr(err)
 
 	dbMap = initTable(db)
 	imgRoot = config.GetEnv("IMG_ROOT", "./img")
 
 	tf, err := IsExistsToken()
-	log.Println(tf)
 	checkErr(err)
 	if !tf {
 		key := util.RandomStr(16)
 		err = CreateToken(key)
 		checkErr(err)
 
-		envFile := config.GetEnv("ENV_FILE", ".envrc")
-		fp, err := os.OpenFile(envFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-		checkErr(err)
+		envFile := fmt.Sprintf(".env.%s", os.Getenv("GO_ENV"))
+		if config.GetEnv("API_TOKEN", "") != "" {
+			sub := "s/API_TOKEN.*$/API_TOKEN=" + key + "/"
+			exec.Command("sed", "-i", "-e", sub, envFile).Run()
+		} else {
+			fp, err := os.OpenFile(envFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+			checkErr(err)
 
-		defer fp.Close()
-		writer := bufio.NewWriter(fp)
-		writer.WriteString("export API_TOKEN=" + key + "\n")
-		writer.Flush()
+			defer fp.Close()
+			writer := bufio.NewWriter(fp)
+			writer.WriteString("API_TOKEN=" + key + "\n")
+			writer.Flush()
+		}
 	}
 }
 

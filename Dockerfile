@@ -5,4 +5,6 @@ WORKDIR /go/src/app
 EXPOSE 8080
 EXPOSE 3000
 
+ENV GO_ENV docker
+
 CMD ["/go/bin/gin", "-a", "8080"]
