@@ -130,6 +130,28 @@ func UpdateImages(images []Image) error {
 	return tx.Commit()
 }
 
+func DeleteImage(image Image) error {
+	var err error
+	_, err = dbMap.Delete(&image)
+
+	path := strings.Replace(image.Path, "./img", imgRoot, 1)
+	thumbPath := strings.Replace(path, "/img", "/img/thumb", 1)
+
+	// Check file is exists
+	if fileExists(path) {
+		if _, err = exec.Command("rm", path).Output(); err != nil {
+			log.Printf("rm error: %s", path)
+		}
+	}
+	if fileExists(thumbPath) {
+		if _, err = exec.Command("rm", thumbPath).Output(); err != nil {
+			log.Printf("rm error: %s", thumbPath)
+		}
+	}
+
+	return err
+}
+
 func DeleteImages(images []Image) error {
 	tx, err := dbMap.Begin()
 	if err != nil {

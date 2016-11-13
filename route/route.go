@@ -37,6 +37,7 @@ func New() *gin.Engine {
 		api.GET("/images/", controller.API.ImagesGET)
 		api.POST("/images/", controller.API.ImagesPOST)
 		api.PUT("/images/", controller.API.ImagesPUT)
+		api.DELETE("/images/:id", controller.API.ImageDelete)
 	}
 
 	return router

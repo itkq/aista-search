@@ -64,6 +64,25 @@ func (a *api) ImagesPUT(c *gin.Context) {
 	c.JSON(200, gin.H{"status": "ok", "count": len(images)})
 }
 
+func (a *api) ImageDelete(c *gin.Context) {
+	var err error
+	var image *db.Image
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	image, err = db.GetImageByID(id)
+
+	if err != nil {
+		c.JSON(500, gin.H{"status": "bad", "msg": "db error"})
+		return
+	}
+	if err = db.DeleteImage(*image); err != nil {
+		c.JSON(500, gin.H{"status": "bad", "msg": "db error"})
+		return
+	}
+
+	c.JSON(200, gin.H{"status": "ok", "msg": ""})
+}
+
 func ImagePOST(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	sentence := c.PostForm("sentence")
