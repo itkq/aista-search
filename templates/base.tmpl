@@ -13,10 +13,19 @@
 		<script src="//oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
 		<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	<![endif]-->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
 
 	{{template "head" .}}
   </head>
-  <body>
+  <body style="padding-top: 70px;">
+  <nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+    <a class="navbar-brand" href="/">aista-search</a>
+    </ul>
+    <form class="form-inline float-xs-right" id="search" method="get" action="/">
+      <input class="form-control" type="text" id="query" name="q" placeholder="sentence" value="{{ .q }}">
+      <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+  </nav>
 	<div id="flash-container">
 	{{range $fm := .flashes}}
 		<div id="flash-message" class="alert alert-box-fixed0 alert-box-fixed alert-dismissible {{.Class}}" role="alert">
@@ -26,7 +35,9 @@
 	{{end}}
 	</div>
 
-	{{template "content" .}}
+  <div class="container">
+    {{template "content" .}}
+  </div>
 
 	{{template "foot" .}}
 

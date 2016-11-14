@@ -3,27 +3,78 @@
 <script src="/js/jquery.min.js"></script>
 {{ end }}
 {{ define "content" }}
-<h2>画像検索</h2>
-<form id="search" method="get" action="/">
-	<label for="query">検索キーワード:</label>
-	<input type="text" id="query" name="q" value="{{ .q }}">
-	<input type="submit" value="検索"/>
-</form>
 {{ $q := .q }}
 {{ with .page }}
-  {{ range .List }}
-    <a href="/images/{{ .ID }}"><img width="500px" src="{{ .Path | ThumbnailPath }}"></a>
-  {{ end }}
-
-  <div class="pager">
-    {{ if .First }}<a href="/?p={{ .First }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .First }}]</a>{{ end }}
-    {{ if .PrevExist }}<span>...</span>{{ end }}
-    {{ if .Prev }}<a href="/?p={{ .Prev }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Prev }}]</a>{{ end }}
-    {{ if .Current }}<span>[{{ .Current }}]</span>{{ end }}
-    {{ if .Next }}<a href="/?p={{ .Next }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Next }}]</a>{{ end }}
-    {{ if .NextExist }}<span>...</span>{{ end }}
-    {{ if .Last }}<a href="/?p={{ .Last }}{{ if $q }}&q={{ $q }}{{ end }}">[{{ .Last }}]</a>{{ end }}
+  <div class="row">
+    {{ range .List }}
+      <div class="col-sm-6 col-md-4">
+        <a class="thumbnail" href="/images/{{ .ID }}">
+          <img class="img-thumbnail" src="{{ .Path | ThumbnailPath }}">
+        </a>
+      </div>
+    {{ end }}
   </div>
+
+  <ul class="pagination">
+    {{ if or .First .Prev }}
+      <li class="page-item">
+        <a class="page-link" href="/?p={{ or .First .Prev }}{{ if $q }}&q={{ $q }}{{ end }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only">Previous</span>
+        </a>
+      </li>
+    {{ end }}
+    {{ if .First }}
+      <li class="page-item">
+        <a class="page-link" href="/?p={{ .First }}{{ if $q }}&q={{ $q }}{{ end }}">{{ .First }}</a>
+      </li>
+    {{ end }}
+
+    {{ if .PrevExist }}
+      <li class="page-item">
+        <a class="page-link">...</a>
+      </li>
+    {{ end }}
+
+    {{ if .Prev }}
+      <li class="page-item">
+        <a class="page-link" href="/?p={{ .Prev }}{{ if $q }}&q={{ $q }}{{ end }}">{{ .Prev }}</a>
+      </li>
+    {{ end }}
+
+    {{ if .Current }}
+      <li class="page-item active">
+        <a class="page-link">{{ .Current }}</a>
+      </li>
+    {{ end }}
+
+    {{ if .Next }}
+      <li class="page-item">
+        <a class="page-link" href="/?p={{ .Next }}{{ if $q }}&q={{ $q }}{{ end }}">{{ .Next }}</a>
+      </li>
+    {{ end }}
+
+    {{ if .NextExist }}
+      <li class="page-item">
+        <a class="page-link">...</a>
+      </li>
+    {{ end }}
+
+    {{ if .Last }}
+      <li class="page-item">
+        <a class="page-link" href="/?p={{ .Last }}{{ if $q }}&q={{ $q }}{{ end }}">{{ .Last }}</a>
+      </li>
+    {{ end }}
+
+    {{ if or .Next .Last }}
+      <li class="page-item">
+      <a class="page-link" href="/?p={{ or .Next .Last }}{{ if $q }}&q={{ $q }}{{ end }}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+      </li>
+    {{ end }}
+  </ul>
 {{ end }}
 {{ end }}
 {{ define "foot" }}
