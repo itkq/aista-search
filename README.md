@@ -1,5 +1,5 @@
 # aista-search
 
-aikatsu stars image database
+Aikatsu stars image database
 
-<img src="https://raw.githubusercontent.com/wiki/itkq/aista-search/images/image.png" width="800"/>
+<img src="https://raw.githubusercontent.com/wiki/itkq/aista-search/images/image2.png" width="800"/>
