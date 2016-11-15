@@ -19,6 +19,7 @@ func New() *gin.Engine {
 	router.Static("/css", config.GetEnv("JS_ROOT", "./assets/css"))
 
 	router.GET("/", controller.SearchGET)
+	router.GET("/about", controller.AboutGET)
 	router.GET("/ping", controller.Ping)
 
 	router.GET("/images/:id", controller.ImageGET)
