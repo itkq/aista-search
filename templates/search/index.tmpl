@@ -1,6 +1,5 @@
 {{ define "title"}} - 画像検索{{ end }}
 {{ define "head" }}
-<script src="/js/jquery.min.js"></script>
 {{ end }}
 {{ define "content" }}
 {{ $q := .q }}
@@ -8,7 +7,7 @@
   <div class="row">
     {{ range .List }}
       <div class="col-sm-6 col-md-4">
-        <a class="thumbnail" href="/images/{{ .ID }}">
+        <a href="/images/{{ .ID }}">
           <img class="img-thumbnail" src="{{ .Path | ThumbnailPath }}">
         </a>
       </div>
