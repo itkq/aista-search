@@ -25,7 +25,7 @@ func New() *gin.Engine {
 	router.GET("/images/:id", controller.ImageGET)
 	router.POST("/images/:id", controller.ImagePOST)
 	router.GET("/admin/images/", controller.ImagesGET)
-	router.POST("/admin/", controller.ImagesDELETE)
+	router.POST("/admin/images/", controller.ImagesDELETE)
 
 	api := router.Group("/api")
 	api.Use(middleware.Auth())

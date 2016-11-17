@@ -6,7 +6,7 @@
 {{ define "content" }}
 <h2>画像一覧</h2>
 {{ with .page }}
-	<form method="post" action="/images/?p={{ .Current }}">
+	<form method="post" action="/admin/images/?p={{ .Current }}">
 	<select name="image_ids[]" multiple="multiple" class="image-picker show-html">
     {{ range .List }}
 		<option data-img-src="{{ .Path | ThumbnailPath }}" value="{{ .ID }}">{{ .ID }}</option>

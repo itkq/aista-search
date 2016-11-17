@@ -184,7 +184,7 @@ func ImagesDELETE(c *gin.Context) {
 		pp.Println(err)
 		sess.AddFlash(view.Flash{"削除に失敗しました", "error"})
 		sess.Save(c.Request, c.Writer)
-		c.Redirect(302, "/images/?p="+p)
+		c.Redirect(302, "/admin/images/?p="+p)
 		return
 	}
 
@@ -196,5 +196,5 @@ func ImagesDELETE(c *gin.Context) {
 		sess.Save(c.Request, c.Writer)
 	}
 
-	c.Redirect(302, "/images/?p="+p)
+	c.Redirect(302, "/admin/images/?p="+p)
 }
