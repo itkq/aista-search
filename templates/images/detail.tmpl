@@ -3,30 +3,32 @@
 {{ define "content" }}
 
 <div class="row">
-  <h2>画像(大)</h2>
-  {{ with .image }}
-    <form id="image" method="post" action="/images/{{ .ID }}">
-      <div class="form-group">
-        <label for="image">Image</label>
-        <img class="img-fluid" src="{{ .Path | ImagePath }}">
-      </div>
-      <div class="form-group">
-        <label for="sentence">Registered sentence</label>
-        {{ with .Sentence }}
-          <input class="form-control" type="text" size="64" name="sentence" value="{{ if .Valid }}{{ .String }}{{ end }}">
+  <div class="col-xs-12 col-md-9">
+    <h2>画像(大)</h2>
+    {{ with .image }}
+      <form id="image" method="post" action="/images/{{ .ID }}">
+        <div class="form-group">
+          <label for="image">Image</label>
+          <img class="img-fluid" src="{{ .Path | ImagePath }}">
+        </div>
+        <div class="form-group">
+          <label for="sentence">Registered sentence</label>
+          {{ with .Sentence }}
+            <input class="form-control" type="text" size="64" name="sentence" value="{{ if .Valid }}{{ .String }}{{ end }}">
+          {{ end }}
+        </div>
+        {{ with .URL }}
+          {{ if .Valid }}
+            <div class="form-group">
+              <label for="url">Twitter Image URL</label>
+              <input class="form-control" type="text" size="64" readonly="readonly" value="{{ .String }}">
+            </div>
+          {{ end }}
         {{ end }}
-      </div>
-      {{ with .URL }}
-        {{ if .Valid }}
-          <div class="form-group">
-            <label for="url">Twitter Image URL</label>
-            <input class="form-control" type="text" size="64" readonly="readonly" value="{{ .String }}">
-          </div>
-        {{ end }}
-      {{ end }}
-    <button type="submit" class="btn btn-primary">Update</button>
-    </form>
-  {{ end }}
+      <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+    {{ end }}
+  </div>
 </div>
 {{ end }}
 {{ define "foot" }}{{ end }}
